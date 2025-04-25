@@ -2,103 +2,104 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\User;
+use Illuminate\Validation\Rules\Password;
 
 class AuthController extends Controller
 {
+    // Show Login Form
     public function showLoginForm()
     {
-        // Redirect ke dashboard jika pengguna sudah login
+        // If user already logged in, redirect to appropriate dashboard
         if (Auth::check()) {
-            return redirect()->intended(auth()->user()->isOwner() ? 'owner/dashboard' : 'admin/dashboard');
+            $dashboard = auth()->user()->isOwner() ? 'owner/dashboard' : 'admin/dashboard';
+            return redirect()->intended($dashboard);
         }
         
         return view('auth.login');
     }
 
+    // Handle Login Request
     public function login(Request $request)
     {
-        // Validasi kredensial login
-        $credentials = $this->validateLogin($request);
+        $credentials = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
+        ], [
+            'email.required' => 'Email harus diisi',
+            'email.email' => 'Format email tidak valid',
+            'password.required' => 'Password harus diisi',
+        ]);
 
-        // Coba untuk login
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-
-            // Menampilkan pesan sukses menggunakan SweetAlert
-            return redirect()->intended(auth()->user()->isOwner() ? 'owner/dashboard' : 'admin/dashboard')
-                             ->with('success','Berhasil login');
+            $dashboard = auth()->user()->isOwner() ? 'owner.dashboard' : 'admin.dashboard';
+            return redirect()->intended($dashboard)->with('success', 'Login berhasil');
         }
 
-        // Menampilkan pesan kesalahan jika login gagal
-        return back()->withErrors(['email' => __('auth.failed')]);
+        return back()->withErrors([
+            'email' => 'Email atau password salah',
+        ]);
     }
 
+    // Handle Logout
     public function logout(Request $request)
     {
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect('login')->with('success', 'berhasil logout');
+        return redirect('login')->with('success', 'Anda berhasil logout');
     }
 
+    // Show Registration Form
     public function showRegistrationForm()
     {
         return view('auth.register');
     }
 
+    // Handle Registration
     public function register(Request $request)
     {
-        // Validasi input pendaftaran
-        $validatedData = $this->validateRegistration($request);
-
-        // Buat pengguna baru
-        $user = User::create([
-            'name' => $validatedData['name'],
-            'email' => $validatedData['email'],
-            'password' => bcrypt($validatedData['password']),
-            'role' => $validatedData['role'],
-        ]);
-
-        // Login pengguna
-        Auth::login($user);
-
-        // Redirect berdasarkan role dan menampilkan pesan sukses
-        return redirect()->route($user->isOwner() ? 'owner.dashboard' : 'admin.dashboard')
-                         ->with('success', 'berhasil mendaftar akun');
-    }
-
-    protected function validateLogin(Request $request)
-    {
-        return $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ], [
-            'email.required' => 'Alamat email wajib diisi',
-            'email.email' => 'Format alamat email tidak valid',
-            'password.required' => 'Password wajib diisi',
-        ]);
-    }
-
-    protected function validateRegistration(Request $request)
-    {
-        return $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
+        $data = $request->validate([
+            'name' => 'required|max:255',
+            'email' => 'required|email|unique:users',
+            'password' => [
+                'required',
+                'confirmed',
+                Password::min(8)
+                    ->letters()
+                    ->mixedCase()
+                    ->numbers()
+                    ->symbols()
+            ],
             'role' => 'required|in:admin,owner',
         ], [
-            'name.required' => __('validation.required', ['attribute' => 'nama']),
-            'email.required' => __('validation.required', ['attribute' => 'email']),
-            'email.email' => __('validation.email', ['attribute' => 'email']),
-            'email.unique' => __('validation.unique', ['attribute' => 'email']),
-            'password.required' => __('validation.required', ['attribute' => 'password']),
-            'password.min' => __('validation.min.string', ['attribute' => 'password', 'min' => 8]),
-            'password.confirmed' => __('validation.confirmed'),
-            'role.required' => __('validation.required', ['attribute' => 'role']),
-            'role.in' => __('validation.in', ['attribute' => 'role']),
+            'name.required' => 'Nama lengkap harus diisi',
+            'email.required' => 'Email harus diisi',
+            'email.email' => 'Format email tidak valid',
+            'email.unique' => 'Email sudah terdaftar',
+            'password.required' => 'Password harus diisi',
+            'password.confirmed' => 'Konfirmasi password tidak cocok',
+            'password.min' => 'Password minimal 8 karakter',
+            'role.required' => 'Pilih role pengguna',
+            'role.in' => 'Role tidak valid',
         ]);
+
+        // Create new user
+        $user = User::create([
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'password' => bcrypt($data['password']),
+            'role' => $data['role'],
+        ]);
+
+        // Auto login after registration
+        Auth::login($user);
+
+        // Redirect to appropriate dashboard
+        $dashboard = $user->isOwner() ? 'owner.dashboard' : 'admin.dashboard';
+        return redirect()->route($dashboard)->with('success', 'Registrasi berhasil');
     }
 }
