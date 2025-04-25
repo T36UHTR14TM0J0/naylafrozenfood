@@ -20,6 +20,6 @@
 
     <!-- azia CSS -->
     <link rel="stylesheet" href="{{ asset('css/azia.css')}}">
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    {{-- @vite(['resources/css/app.css', 'resources/js/app.js']) --}}
 
   </head>

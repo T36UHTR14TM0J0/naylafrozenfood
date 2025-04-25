@@ -36,6 +36,6 @@
 
     <script src="{{ asset('js/azia.js')}}"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    @include('js_default.js_alert')
+    {{-- @include('js_default.js_alert') --}}
   </body>
 </html>
