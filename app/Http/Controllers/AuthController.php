@@ -5,23 +5,27 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\Rules\Password;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Validation\Rules;
+use Illuminate\Auth\Events\PasswordReset;
+use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
-    // Show Login Form
+    /**
+     * Show login form
+     */
     public function showLoginForm()
     {
-        // If user already logged in, redirect to appropriate dashboard
         if (Auth::check()) {
-            $dashboard = auth()->user()->isOwner() ? 'owner/dashboard' : 'admin/dashboard';
-            return redirect()->intended($dashboard);
+            return redirect()->intended($this->redirectTo());
         }
-        
         return view('auth.login');
     }
 
-    // Handle Login Request
+    /**
+     * Handle login request
+     */
     public function login(Request $request)
     {
         $credentials = $request->validate([
@@ -33,47 +37,38 @@ class AuthController extends Controller
             'password.required' => 'Password harus diisi',
         ]);
 
-        if (Auth::attempt($credentials)) {
+        if (Auth::attempt($credentials, $request->remember)) {
             $request->session()->regenerate();
-            $dashboard = auth()->user()->isOwner() ? 'owner.dashboard' : 'admin.dashboard';
-            return redirect()->intended($dashboard)->with('success', 'Login berhasil');
+            return redirect()->intended($this->redirectTo())
+                             ->with('success', 'Login berhasil');
         }
 
         return back()->withErrors([
             'email' => 'Email atau password salah',
-        ]);
+        ])->onlyInput('email');
     }
 
-    // Handle Logout
-    public function logout(Request $request)
-    {
-        Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-        return redirect('login')->with('success', 'Anda berhasil logout');
-    }
-
-    // Show Registration Form
+    /**
+     * Show registration form
+     */
     public function showRegistrationForm()
     {
         return view('auth.register');
     }
 
-    // Handle Registration
+    /**
+     * Handle registration request
+     */
     public function register(Request $request)
     {
         $data = $request->validate([
             'name' => 'required|max:255',
             'email' => 'required|email|unique:users',
-            'password' => [
-                'required',
-                'confirmed',
-                Password::min(8)
-                    ->letters()
-                    ->mixedCase()
-                    ->numbers()
-                    ->symbols()
-            ],
+            'password' => ['required', 'confirmed', Rules\Password::min(8)
+                ->letters()
+                ->mixedCase()
+                ->numbers()
+                ->symbols()],
             'role' => 'required|in:admin,owner',
         ], [
             'name.required' => 'Nama lengkap harus diisi',
@@ -82,12 +77,10 @@ class AuthController extends Controller
             'email.unique' => 'Email sudah terdaftar',
             'password.required' => 'Password harus diisi',
             'password.confirmed' => 'Konfirmasi password tidak cocok',
-            'password.min' => 'Password minimal 8 karakter',
             'role.required' => 'Pilih role pengguna',
             'role.in' => 'Role tidak valid',
         ]);
 
-        // Create new user
         $user = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
@@ -95,11 +88,90 @@ class AuthController extends Controller
             'role' => $data['role'],
         ]);
 
-        // Auto login after registration
         Auth::login($user);
 
-        // Redirect to appropriate dashboard
-        $dashboard = $user->isOwner() ? 'owner.dashboard' : 'admin.dashboard';
-        return redirect()->route($dashboard)->with('success', 'Registrasi berhasil');
+        return redirect($this->redirectTo())->with('success', 'Registrasi berhasil');
+    }
+
+    /**
+     * Show forgot password form
+     */
+    public function showForgotPasswordForm()
+    {
+        return view('auth.forgot_password');
+    }
+
+    /**
+     * Handle forgot password request
+     */
+    public function sendResetLinkEmail(Request $request)
+    {
+        $request->validate(['email' => 'required|email']);
+
+        $status = Password::sendResetLink(
+            $request->only('email')
+        );
+
+        return $status === Password::RESET_LINK_SENT
+            ? back()->with(['status' => __($status)])
+            : back()->withErrors(['email' => __($status)]);
+    }
+
+    /**
+     * Show password reset form
+     */
+    public function showResetPasswordForm($token)
+    {
+        return view('auth.reset_password', ['token' => $token]);
+    }
+
+    /**
+     * Handle password reset request
+     */
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'token' => 'required',
+            'email' => 'required|email',
+            'password' => ['required', 'confirmed', Rules\Password::min(8)],
+        ]);
+
+        $status = Password::reset(
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+            function ($user, $password) {
+                $user->forceFill([
+                    'password' => bcrypt($password),
+                    'remember_token' => Str::random(60),
+                ])->save();
+
+                event(new PasswordReset($user));
+            }
+        );
+
+        return $status === Password::PASSWORD_RESET
+            ? redirect()->route('login')->with('status', __($status))
+            : back()->withErrors(['email' => [__($status)]]);
+    }
+
+    /**
+     * Handle logout request
+     */
+    public function logout(Request $request)
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return redirect('/login')->with('success', 'Anda berhasil logout');
+    }
+
+    /**
+     * Determine redirect path based on user role
+     */
+    protected function redirectTo()
+    {
+        if (Auth::check()) {
+            return Auth::user()->isOwner() ? '/owner/dashboard' : '/admin/dashboard';
+        }
+        return '/login';
     }
 }

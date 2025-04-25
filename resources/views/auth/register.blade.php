@@ -1,5 +1,5 @@
 @extends('auth.layouts')
-
+@section('title', 'Register')
 @section('content')
 <div class="az-signin-wrapper">
   <div class="az-card-signin p-4 m-5">

@@ -1,4 +1,5 @@
 @extends('auth.layouts')
+@section('title', 'Login')
 @section('content')
 <div class="az-signin-wrapper">
   <div class="az-card-signin">
@@ -29,7 +30,7 @@
         <button type="submit" class="btn btn-az-primary btn-block" style="margin-bottom:0px !important;">Sign In</button>
       </form>
       <div class="az-signin-footer mt-2">
-        <p><a href="">Lupa password?</a></p>
+        <p><a href="{{ route('password.request') }}">Lupa password?</a></p>
         <p>Belum punya akun? <a href="{{ route('register') }}">Register</a></p>
       </div><!-- az-signin-footer -->
     </div><!-- az-signin-header -->

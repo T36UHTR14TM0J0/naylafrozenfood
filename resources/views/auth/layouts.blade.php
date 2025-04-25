@@ -13,7 +13,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>{{ config('app.name') }}</title>
+    <title>{{ config('app.name') }} | @yield('title')</title>
 
     <!-- vendor css -->
     <link href="{{ asset('lib/fontawesome-free/css/all.min.css')}}" rel="stylesheet">
