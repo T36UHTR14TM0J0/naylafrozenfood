@@ -1,17 +1,17 @@
-<div class="az-header">
+<div class="az-header fixed-top">
   <div class="container">
     <div class="az-header-left">
-      <a href="index.html" class="az-logo"><span></span> azia</a>
-      <a href="" id="azMenuShow" class="az-header-menu-icon d-lg-none"><span></span></a>
+      <a href="{{ route('dashboard') }}" class="az-logo"><span>N</span> Frozenfood</a>
+      <a href="{{ route('dashboard') }}" id="azMenuShow" class="az-header-menu-icon d-lg-none"><span></span></a>
     </div><!-- az-header-left -->
     <div class="az-header-menu">
       <div class="az-header-menu-header">
-        <a href="index.html" class="az-logo"><span></span> azia</a>
-        <a href="" class="close">&times;</a>
+        <a href="{{ route('dashboard') }}" class="az-logo"><span>N</span> Frozenfood</a>
+        <a href="{{ route('dashboard') }}" class="close">&times;</a>
       </div><!-- az-header-menu-header -->
       <ul class="nav">
         <li class="nav-item active show">
-          <a href="index.html" class="nav-link"><i class="typcn typcn-chart-area-outline"></i> Dashboard</a>
+          <a href="{{ route('dashboard') }}" class="nav-link"><i class="typcn typcn-chart-area-outline"></i> Dashboard</a>
         </li>
         <li class="nav-item">
           <a href="" class="nav-link with-sub"><i class="typcn typcn-document"></i> Pages</a>
@@ -46,12 +46,13 @@
     <div class="az-header-right">
       
       <div class="dropdown az-profile-menu">
-        <a href="" class="az-img-user" style="text-decoration: none;"><h6>Aziana Pechon</h6></a>
+        <br>
+        <a href="" class="az-img-user" style="text-decoration: none;width:100px !important;"><h6>{{ auth()->user()->name }}</h6></a>
         <div class="dropdown-menu">
           <div class="az-dropdown-header d-sm-none">
             <a href="" class="az-header-arrow"><i class="icon ion-md-arrow-back"></i></a>
           </div>
-          <a href="" class="dropdown-item"><i class="typcn typcn-edit"></i> Edit Profile</a>
+          <a href="{{ route('profile.edit') }}" class="dropdown-item"><i class="typcn typcn-edit"></i> Edit Profile</a>
           <form action="{{ route('logout') }}" method="POST">
             @csrf
               <button type="submit" class="dropdown-item"><i class="typcn typcn-power-outline"></i> Logout</button>
@@ -61,3 +62,4 @@
     </div><!-- az-header-right -->
   </div><!-- container -->
 </div><!-- az-header -->
+

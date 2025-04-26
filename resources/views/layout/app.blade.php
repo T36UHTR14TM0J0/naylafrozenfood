@@ -10,8 +10,8 @@
             @include('layout.top_page')
           </div><!-- az-dashboard-one-title -->
 
-          <div class="card">
-            <div class="container">
+          <div class="card mb-5">
+            <div class="container p-5">
               @yield('content')
             </div>
           </div>

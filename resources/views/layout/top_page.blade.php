@@ -22,10 +22,9 @@
   <div class="d-flex justify-content-between align-items-center">
       <div>
           <h2 class="az-dashboard-title">@yield('title')</h2>
-          <p class="az-dashboard-text">Your web analytics dashboard template.</p>
       </div>
-      <div class="az-content-header-right">
+      {{-- <div class="az-content-header-right">
           <a href="#" class="btn btn-purple">Export</a>
-      </div>
+      </div> --}}
   </div>
 </div>

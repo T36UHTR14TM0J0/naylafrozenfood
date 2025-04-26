@@ -182,7 +182,7 @@ class AuthController extends Controller
     protected function redirectTo()
     {
         if (Auth::check()) {
-            return Auth::user()->isOwner() ? '/owner/dashboard' : '/admin/dashboard';
+            return 'dashboard';
         }
         return '/login';
     }

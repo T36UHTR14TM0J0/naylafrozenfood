@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ProfileController;
 
 // use App\Http\Controllers\Admin\AdminController;
 // use App\Http\Controllers\Owner\OwnerController;
@@ -24,12 +25,20 @@ Route::post('forgot_password', [AuthController::class, 'sendResetLinkEmail'])->n
 Route::get('reset_password/{token}', [AuthController::class, 'showResetPasswordForm'])->name('password.reset');
 Route::post('reset_password', [AuthController::class, 'resetPassword'])->name('password.update');
 
+Route::middleware(['auth'])->group(function () {
+    // Route untuk ProfileController yang kita buat sebelumnya
+    Route::prefix('profile')->group(function () {
+        Route::get('edit', [ProfileController::class, 'index'])->name('profile.edit');
+        Route::put('update', [ProfileController::class, 'update'])->name('profile.update');
+    });
+
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+});
 // Admin Routes
 Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
+
 });
 
 // // Owner Routes
 Route::prefix('owner')->middleware(['auth', 'owner'])->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('owner.dashboard');
 });
