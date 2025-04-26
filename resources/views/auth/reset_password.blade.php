@@ -7,12 +7,6 @@
       <h2>Reset Password</h2>
       <h4>Masukkan password baru Anda</h4>
 
-      @if (session('status'))
-        <div class="alert alert-success" role="alert">
-          {{ session('status') }}
-        </div>
-      @endif
-
       <form method="POST" action="{{ route('password.update') }}">
         @csrf
         <input type="hidden" name="token" value="{{ $token }}">
@@ -22,7 +16,7 @@
           <input id="email" type="email" 
                  class="form-control @error('email') is-invalid @enderror" 
                  name="email" value="{{ $email ?? old('email') }}" 
-                 required autocomplete="email" autofocus>
+                 required autocomplete="email" autofocus readonly>
           @error('email')
             <div class="invalid-feedback">
               {{ $message }}

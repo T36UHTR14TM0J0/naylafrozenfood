@@ -29,11 +29,11 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $credentials = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
+            'email'     => 'required|email',
+            'password'  => 'required',
         ], [
-            'email.required' => 'Email harus diisi',
-            'email.email' => 'Format email tidak valid',
+            'email.required'    => 'Email harus diisi',
+            'email.email'       => 'Format email tidak valid',
             'password.required' => 'Password harus diisi',
         ]);
 
@@ -62,30 +62,30 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $data = $request->validate([
-            'name' => 'required|max:255',
-            'email' => 'required|email|unique:users',
-            'password' => ['required', 'confirmed', Rules\Password::min(8)
-                ->letters()
-                ->mixedCase()
-                ->numbers()
-                ->symbols()],
-            'role' => 'required|in:admin,owner',
+            'name'          => 'required|max:255',
+            'email'         => 'required|email|unique:users',
+            'password'      => ['required', 'confirmed', Rules\Password::min(8)
+                                ->letters()
+                                ->mixedCase()
+                                ->numbers()
+                                ->symbols()],
+            'role'          => 'required|in:admin,owner',
         ], [
-            'name.required' => 'Nama lengkap harus diisi',
-            'email.required' => 'Email harus diisi',
-            'email.email' => 'Format email tidak valid',
-            'email.unique' => 'Email sudah terdaftar',
-            'password.required' => 'Password harus diisi',
-            'password.confirmed' => 'Konfirmasi password tidak cocok',
-            'role.required' => 'Pilih role pengguna',
-            'role.in' => 'Role tidak valid',
+            'name.required'         => 'Nama lengkap harus diisi',
+            'email.required'        => 'Email harus diisi',
+            'email.email'           => 'Format email tidak valid',
+            'email.unique'          => 'Email sudah terdaftar',
+            'password.required'     => 'Password harus diisi',
+            'password.confirmed'    => 'Konfirmasi password tidak cocok',
+            'role.required'         => 'Pilih role pengguna',
+            'role.in'               => 'Role tidak valid',
         ]);
 
         $user = User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => bcrypt($data['password']),
-            'role' => $data['role'],
+            'name'      => $data['name'],
+            'email'     => $data['email'],
+            'password'  => bcrypt($data['password']),
+            'role'      => $data['role'],
         ]);
 
         Auth::login($user);
@@ -106,14 +106,19 @@ class AuthController extends Controller
      */
     public function sendResetLinkEmail(Request $request)
     {
-        $request->validate(['email' => 'required|email']);
+        $request->validate([
+            'email'             => 'required|email',
+        ], [
+            'email.required'    => 'Alamat email wajib diisi',
+            'email.email'       => 'Format alamat email tidak valid',
+        ]);
 
         $status = Password::sendResetLink(
             $request->only('email')
         );
 
         return $status === Password::RESET_LINK_SENT
-            ? back()->with(['status' => __($status)])
+            ? back()->with("success","Berhasil mengirim link reset password")
             : back()->withErrors(['email' => __($status)]);
     }
 
@@ -122,7 +127,8 @@ class AuthController extends Controller
      */
     public function showResetPasswordForm($token)
     {
-        return view('auth.reset_password', ['token' => $token]);
+        $email = $_GET['email'];
+        return view('auth.reset_password', ['token' => $token,'email' => $email]);
     }
 
     /**
@@ -131,11 +137,17 @@ class AuthController extends Controller
     public function resetPassword(Request $request)
     {
         $request->validate([
-            'token' => 'required',
-            'email' => 'required|email',
-            'password' => ['required', 'confirmed', Rules\Password::min(8)],
+            'token'             => 'required',
+            'email'             => 'required|email',
+            'password'          => ['required', 'confirmed', Rules\Password::min(8)],
+        ], [
+            'token.required'    => 'Token reset password wajib ada',
+            'email.required'    => 'Alamat email wajib diisi',
+            'email.email'       => 'Format alamat email tidak valid',
+            'password.required' => 'Password baru wajib diisi',
+            'password.confirmed'=> 'Konfirmasi password tidak cocok',
+            'password.min'      => 'Password minimal harus 8 karakter',
         ]);
-
         $status = Password::reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),
             function ($user, $password) {
@@ -149,7 +161,7 @@ class AuthController extends Controller
         );
 
         return $status === Password::PASSWORD_RESET
-            ? redirect()->route('login')->with('status', __($status))
+            ? redirect()->route('login')->with('success', "Berhasil membuat password baru")
             : back()->withErrors(['email' => [__($status)]]);
     }
 

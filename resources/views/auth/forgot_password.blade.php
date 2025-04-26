@@ -6,12 +6,6 @@
     <div class="az-signin-header mt-5">
       <h2>Lupa Password</h2>
       
-      @if (session('status'))
-        <div class="alert alert-success" role="alert">
-          {{ session('status') }}
-        </div>
-      @endif
-
       <form method="POST" action="{{ route('password.email') }}">
         @csrf
         <div class="form-group">
