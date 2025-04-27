@@ -1,65 +1,77 @@
-<div class="az-header fixed-top">
-  <div class="container">
-    <div class="az-header-left">
-      <a href="{{ route('dashboard') }}" class="az-logo"><span>N</span> Frozenfood</a>
-      <a href="{{ route('dashboard') }}" id="azMenuShow" class="az-header-menu-icon d-lg-none"><span></span></a>
-    </div><!-- az-header-left -->
-    <div class="az-header-menu">
-      <div class="az-header-menu-header">
-        <a href="{{ route('dashboard') }}" class="az-logo"><span>N</span> Frozenfood</a>
-        <a href="{{ route('dashboard') }}" class="close">&times;</a>
-      </div><!-- az-header-menu-header -->
-      <ul class="nav">
-        <li class="nav-item active show">
-          <a href="{{ route('dashboard') }}" class="nav-link"><i class="typcn typcn-chart-area-outline"></i> Dashboard</a>
+ <!-- [ Header Topbar ] start -->
+<header class="pc-header">
+  <div class="header-wrapper"> <!-- [Mobile Media Block] start -->
+    <div class="me-auto pc-mob-drp">
+      <ul class="list-unstyled">
+        <!-- ======= Menu collapse Icon ===== -->
+        <li class="pc-h-item pc-sidebar-collapse">
+          <a href="#" class="pc-head-link ms-0" id="sidebar-hide">
+            <i class="ti ti-menu-2"></i>
+          </a>
         </li>
-        <li class="nav-item">
-          <a href="" class="nav-link with-sub"><i class="typcn typcn-document"></i> Pages</a>
-          <nav class="az-menu-sub">
-            <a href="page-signin.html" class="nav-link">Sign In</a>
-            <a href="page-signup.html" class="nav-link">Sign Up</a>
-          </nav>
-        </li>
-        <li class="nav-item">
-          <a href="chart-chartjs.html" class="nav-link"><i class="typcn typcn-chart-bar-outline"></i> Charts</a>
-        </li>
-        <li class="nav-item">
-          <a href="form-elements.html" class="nav-link"><i class="typcn typcn-chart-bar-outline"></i> Forms</a>
-        </li>
-        <li class="nav-item">
-          <a href="" class="nav-link with-sub"><i class="typcn typcn-book"></i> Components</a>
-          <div class="az-menu-sub">
-            <div class="container">
-              <div>
-                <nav class="nav">
-                  <a href="elem-buttons.html" class="nav-link">Buttons</a>
-                  <a href="elem-dropdown.html" class="nav-link">Dropdown</a>
-                  <a href="elem-icons.html" class="nav-link">Icons</a>
-                  <a href="table-basic.html" class="nav-link">Table</a>
-                </nav>
-              </div>
-            </div><!-- container -->
-          </div>
+        <li class="pc-h-item pc-sidebar-popup">
+          <a href="#" class="pc-head-link ms-0" id="mobile-collapse">
+            <i class="ti ti-menu-2"></i>
+          </a>
         </li>
       </ul>
-    </div><!-- az-header-menu -->
-    <div class="az-header-right">
-      
-      <div class="dropdown az-profile-menu">
-        <br>
-        <a href="" class="az-img-user" style="text-decoration: none;width:100px !important;"><h6>{{ auth()->user()->name }}</h6></a>
-        <div class="dropdown-menu">
-          <div class="az-dropdown-header d-sm-none">
-            <a href="" class="az-header-arrow"><i class="icon ion-md-arrow-back"></i></a>
+    </div>
+<!-- [Mobile Media Block end] -->
+<div class="ms-auto">
+  <ul class="list-unstyled">
+    <li class="dropdown pc-h-item header-user-profile">
+      <a
+        class="pc-head-link dropdown-toggle arrow-none me-0"
+        data-bs-toggle="dropdown"
+        href="#"
+        role="button"
+        aria-haspopup="false"
+        data-bs-auto-close="outside"
+        aria-expanded="false"
+      >
+        {{-- <img src="../assets/images/user/avatar-2.jpg" alt="user-image" class="user-avtar"> --}}
+        <span>{{ auth()->user()->name }}</span>
+      </a>
+      <div class="dropdown-menu dropdown-user-profile dropdown-menu-end pc-h-dropdown">
+        <div class="dropdown-header">
+          <div class="d-flex mb-1">
+            <div class="flex-grow-1 ms-3">
+              <h6 class="mb-1">{{ auth()->user()->name }}</h6>
+              <span>{{ auth()->user()->role }}</span>
+            </div>
           </div>
-          <a href="{{ route('profile.edit') }}" class="dropdown-item"><i class="typcn typcn-edit"></i> Edit Profile</a>
-          <form action="{{ route('logout') }}" method="POST">
-            @csrf
-              <button type="submit" class="dropdown-item"><i class="typcn typcn-power-outline"></i> Logout</button>
-          </form>
-        </div><!-- dropdown-menu -->
+        </div>
+        <ul class="nav drp-tabs nav-fill nav-tabs" id="mydrpTab" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button
+              class="nav-link active"
+              id="drp-t1"
+              data-bs-toggle="tab"
+              data-bs-target="#drp-tab-1"
+              type="button"
+              role="tab"
+              aria-controls="drp-tab-1"
+              aria-selected="true"
+              ><i class="ti ti-user"></i> Profile</button
+            >
+          </li>
+        </ul>
+        <div class="tab-content" id="mysrpTabContent">
+          <div class="tab-pane fade show active" id="drp-tab-1" role="tabpanel" aria-labelledby="drp-t1" tabindex="0">
+            <a href="{{ route('profile.edit') }}" class="dropdown-item">
+              <i class="ti ti-edit-circle"></i>
+              <span>Edit Profile</span>
+            </a>
+            <form action="{{ route('logout') }}" method="POST">
+              @csrf
+                <button type="submit" class="dropdown-item"><i class="ti ti-power"></i> Logout</button>
+            </form>
+          </div>
+        </div>
       </div>
-    </div><!-- az-header-right -->
-  </div><!-- container -->
-</div><!-- az-header -->
-
+    </li>
+  </ul>
+</div>
+ </div>
+</header>
+<!-- [ Header ] end -->

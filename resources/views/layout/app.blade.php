@@ -1,61 +1,47 @@
 
   @include('layout.header')
-  <body>
-    @include('layout.navbar')
+  @include('layout.sidebar')
+  @include('layout.navbar')
 
-    <div class="az-content az-content-dashboard">
-      <div class="container">
-        <div class="az-content-body">
-          <div class="az-dashboard-one-title">
-            @include('layout.top_page')
-          </div><!-- az-dashboard-one-title -->
+  !-- [ Main Content ] start -->
+  <div class="pc-container">
+    <div class="pc-content">
+      <!-- [ breadcrumb ] start -->
+      {{-- <div class="page-header">
+        <div class="page-block">
+          <div class="row align-items-center">
+            <div class="col-md-12">
+              <div class="page-header-title">
+                <h5 class="m-b-10">@yield('title')</h5>
+              </div>
+              <ul class="breadcrumb">
+                <li class="breadcrumb-item"><a href="../dashboard/index.html">Home</a></li>
+                <li class="breadcrumb-item"><a href="javascript: void(0)">Other</a></li>
+                <li class="breadcrumb-item" aria-current="page">Sample Page</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div> --}}
+      <!-- [ breadcrumb ] end -->
 
-          <div class="card mb-5">
-            <div class="container p-5">
+      <!-- [ Main Content ] start -->
+      <div class="row">
+        <!-- [ sample-page ] start -->
+        <div class="col-sm-12">
+          <div class="card">
+            <div class="card-header">
+              <h5>@yield('title')</h5>
+            </div>
+            <div class="card-body">
               @yield('content')
             </div>
           </div>
         </div>
+        <!-- [ sample-page ] end -->
       </div>
-      <style>
-        /* CSS untuk sticky footer */
-        html, body {
-            height: 100%;
-            margin: 0;
-        }
-
-        .az-content {
-            min-height: calc(100vh - 60px); /* Sesuaikan dengan tinggi header dan footer */
-            display: flex;
-            flex-direction: column;
-        }
-        .az-footer {
-            margin-top: auto; /* Memastikan footer berada di bawah */
-        }
-    </style>
-  
-
-    <div class="az-footer">
-        <div class="container ht-100p ">
-            <span class="text-muted d-block text-center text-sm-left d-sm-inline-block">Copyright © bootstrapdash.com 2020</span>
-            <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center"> Free <a href="https://www.bootstrapdash.com/bootstrap-admin-template/" target="_blank">Bootstrap admin templates</a> from Bootstrapdash.com</span>
-        </div><!-- container -->
-    </div><!-- az-footer -->
-
-
-    <script src="{{ asset('lib/jquery/jquery.min.js')}}"></script>
-    <script src="{{ asset('lib/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
-    <script src="{{ asset('lib/ionicons/ionicons.js')}}"></script>
-    <script src="{{ asset('lib/jquery.flot/jquery.flot.js')}}"></script>
-    <script src="{{ asset('lib/jquery.flot/jquery.flot.resize.js')}}"></script>
-    <script src="{{ asset('lib/chart.js/Chart.bundle.min.js')}}"></script>
-    <script src="{{ asset('lib/peity/jquery.peity.min.js')}}"></script>
-
-    <script src="{{ asset('js/azia.js')}}"></script>
-    <script src="{{ asset('js/chart.flot.sampledata.js')}}"></script>
-    <script src="{{ asset('js/dashboard.sampledata.js')}}"></script>
-    <script src="{{ asset('js/jquery.cookie.js')}}" type="text/javascript"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    @include('js_default.js_alert')
-  </body>
-</html>
+      <!-- [ Main Content ] end -->
+    </div>
+  </div>
+  <!-- [ Main Content ] end -->
+@include('layout.footer')
