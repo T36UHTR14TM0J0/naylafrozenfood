@@ -31,7 +31,7 @@
         <div class="col-sm-12">
           <div class="card">
             <div class="card-header">
-              <h5>@yield('title')</h5>
+              <h2>@yield('title')</h2>
             </div>
             <div class="card-body">
               @yield('content')
