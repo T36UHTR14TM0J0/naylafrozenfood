@@ -40,7 +40,7 @@
         @endif
         @if (auth()->user()->isAdmin())
         <li class="pc-item">
-          <a href="#" class="pc-link">
+          <a href="{{ route('kategori.index') }}" class="pc-link">
             <span class="pc-micon"><i class="ti ti-tag"></i></span>
             <span class="pc-mtext">Kategori Item</span>
           </a>

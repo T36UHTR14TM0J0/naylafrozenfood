@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 
@@ -37,7 +38,7 @@ Route::middleware(['auth'])->group(function () {
 });
 // Admin Routes
 Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
-
+    Route::resource('kategori', KategoriController::class);
 });
 
 // // Owner Routes
