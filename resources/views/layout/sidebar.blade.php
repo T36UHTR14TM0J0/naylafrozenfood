@@ -42,7 +42,7 @@
             <span class="pc-mtext">Kategori Item</span>
           </a>
         </li>
-        
+
         <li class="pc-item">
           <a href="#" class="pc-link">
             <span class="pc-micon"><i class="ti ti-package"></i></span>
@@ -69,17 +69,18 @@
           </a>
         </li>
 
+        @if (auth()->user()->isOwner())
         <li class="pc-item pc-caption">
           <label>Manajemen Akun :</label>
           {{-- <i class="ti ti-dashboard"></i> --}}
         </li>
-
         <li class="pc-item">
-          <a href="#" class="pc-link">
+          <a href="{{ route('user.index') }}" class="pc-link">
             <span class="pc-micon"><i class="ti ti-users"></i></span>
             <span class="pc-mtext">Kelola Akun</span>
           </a>
         </li>
+        @endif
 
       </ul>
     </div>
