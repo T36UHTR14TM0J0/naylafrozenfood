@@ -17,17 +17,19 @@
           </a>
         </li>
 
+        @if (auth()->user()->isAdmin())
         <li class="pc-item">
           <a href="#" class="pc-link">
             <span class="pc-micon"><i class="ti ti-receipt"></i></span>
             <span class="pc-mtext">Transaksi</span>
           </a>
         </li>
-
+        @endif
         <li class="pc-item pc-caption">
-          <label>Master Data :</label>
-          {{-- <i class="ti ti-dashboard"></i> --}}
+            <label>Master Data :</label>
+            {{-- <i class="ti ti-dashboard"></i> --}}
         </li>
+        @if (auth()->user()->isOwner())
 
         <li class="pc-item">
           <a href="#" class="pc-link">
@@ -35,7 +37,8 @@
             <span class="pc-mtext">Suplier</span>
           </a>
         </li>
-
+        @endif
+        @if (auth()->user()->isAdmin())
         <li class="pc-item">
           <a href="#" class="pc-link">
             <span class="pc-micon"><i class="ti ti-tag"></i></span>
@@ -56,6 +59,7 @@
             <span class="pc-mtext">Kelola Stok</span>
           </a>
         </li>
+        @endif
 
         <li class="pc-item pc-caption">
           <label>Laporan :</label>
