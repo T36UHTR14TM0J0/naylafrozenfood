@@ -14,7 +14,10 @@
     </div>
 
     <!-- Filter Form -->
-    <div class="card mb-4">
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-white">
+            <h5 class="card-title mb-0"><i class="fas fa-filter me-2"></i>Filter Data</h5>
+        </div>
         <div class="card-body">
             <form method="GET" action="{{ route('satuan.index') }}">
                 <div class="row align-items-end">
@@ -41,7 +44,7 @@
     </div>
 
     <!-- Users Table -->
-    <div class="card">
+    <div class="card shadow-sm">
         <div class="card-body">
             <div class="table-responsive">
                 <table class="table table-striped table-hover table-bordered">

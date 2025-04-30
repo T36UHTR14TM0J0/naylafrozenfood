@@ -53,7 +53,7 @@
         </li>
 
         <li class="pc-item">
-          <a href="#" class="pc-link">
+          <a href="{{ route('item.index') }}" class="pc-link">
             <span class="pc-micon"><i class="ti ti-package"></i></span>
             <span class="pc-mtext">Item</span>
           </a>
