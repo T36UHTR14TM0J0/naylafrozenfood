@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SatuanController;
 use App\Http\Controllers\UserController;
 
 // use App\Http\Controllers\Admin\AdminController;
@@ -40,6 +41,7 @@ Route::middleware(['auth'])->group(function () {
 // Admin Routes
 Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::resource('kategori', KategoriController::class);
+    Route::resource('satuan', SatuanController::class);
 });
 
 // // Owner Routes

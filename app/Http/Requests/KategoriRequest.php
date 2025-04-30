@@ -21,15 +21,27 @@ class KategoriRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
+        $rules = [
             'nama' => [
                 'required',
                 'string',
                 'max:255',
-                'unique:kategoris,nama' // Tambahkan rule unique
+                'unique:kategoris,nama'
             ],
             'desc' => 'required|string|max:1000',
         ];
+
+        // Jika metode update, abaikan unique untuk kategori saat ini
+        if ($this->isMethod('PUT') || $this->isMethod('PATCH')) {
+            $rules['nama'] = [
+                'required',
+                'string',
+                'max:255',
+                'unique:kategoris,nama,'.$this->kategori->id
+            ];
+        }
+
+        return $rules;
     }
 
     public function messages(): array

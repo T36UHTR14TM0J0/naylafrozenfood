@@ -11,8 +11,8 @@
             <p class="card-text">Email: {{ $user->email }}</p>
             <p class="card-text">Role: <span class="badge bg-{{ $user->role == 'admin' ? 'danger' : 'primary' }}">{{ ucfirst($user->role) }}</span></p>
             <p class="card-text">Dibuat pada: {{ $user->created_at->format('d M Y') }}</p>
-            <a href="{{ route('user.edit', $user->id) }}" class="btn btn-primary">Edit</a>
-            <a href="{{ route('user.index') }}" class="btn btn-secondary">Kembali</a>
+            <a href="{{ route('user.edit', $user->id) }}" class="btn btn-sm btn-primary">Edit</a>
+            <a href="{{ route('user.index') }}" class="btn btn-sm btn-secondary">Kembali</a>
         </div>
     </div>
 </div>

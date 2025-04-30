@@ -45,6 +45,12 @@
             <span class="pc-mtext">Kategori Item</span>
           </a>
         </li>
+        <li class="pc-item">
+          <a href="{{ route('satuan.index') }}" class="pc-link">
+            <span class="pc-micon"><i class="ti ti-database"></i></span>
+            <span class="pc-mtext">Satuan Item</span>
+          </a>
+        </li>
 
         <li class="pc-item">
           <a href="#" class="pc-link">

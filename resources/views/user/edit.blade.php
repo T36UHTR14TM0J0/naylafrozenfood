@@ -9,78 +9,67 @@
     @method('PUT')
 
     <!-- Nama Lengkap -->
-    <div class="form-group row mb-3">
+    <div class="form-group mb-3">
         <label for="fullname" class="col-md-4 col-form-label text-md-right">Nama Lengkap</label>
-        <div class="col-md-6">
-            <input type="text" id="fullname" name="name" class="form-control @error('name') is-invalid @enderror"  value="{{ old('name', $user->name) }}" required>
-            @error('name') <!-- Ganti 'fullname' menjadi 'name' -->
-                <span class="invalid-feedback" role="alert">
-                    <strong>{{ $message }}</strong>
-                </span>
-            @enderror
-        </div>
+        <input type="text" id="fullname" name="name" class="form-control @error('name') is-invalid @enderror"  value="{{ old('name', $user->name) }}" required>
+        @error('name') <!-- Ganti 'fullname' menjadi 'name' -->
+            <span class="invalid-feedback" role="alert">
+                <strong>{{ $message }}</strong>
+            </span>
+        @enderror
     </div>
 
     <!-- Email -->
-    <div class="form-group row mb-3">
+    <div class="form-group mb-3">
         <label for="email" class="col-md-4 col-form-label text-md-right">Email</label>
-        <div class="col-md-6">
-            <input type="email" id="email" name="email"
-                  class="form-control @error('email') is-invalid @enderror"
-                  value="{{ old('email', $user->email) }}" required>
-            @error('email')
-                <span class="invalid-feedback" role="alert">
-                    <strong>{{ $message }}</strong>
-                </span>
-            @enderror
-        </div>
+        <input type="email" id="email" name="email"
+              class="form-control @error('email') is-invalid @enderror"
+              value="{{ old('email', $user->email) }}" required>
+        @error('email')
+            <span class="invalid-feedback" role="alert">
+                <strong>{{ $message }}</strong>
+            </span>
+        @enderror
     </div>
 
     <!-- Role -->
-    <div class="form-group row mb-3">
+    <div class="form-group mb-3">
         <label for="role" class="col-md-4 col-form-label text-md-right">Role</label>
-        <div class="col-md-6">
-            <select class="form-select" id="role" name="role" required>
-                <option value="admin" {{ $user->role == 'admin' ? 'selected' : '' }}>Admin</option>
-                <option value="owner" {{ $user->role == 'owner' ? 'selected' : '' }}>Owner</option>
-            </select>
-            @error('role')
-                <div class="text-danger">{{ $message }}</div>
-            @enderror
-        </div>
+        <select class="form-select" id="role" name="role" required>
+            <option value="admin" {{ $user->role == 'admin' ? 'selected' : '' }}>Admin</option>
+            <option value="owner" {{ $user->role == 'owner' ? 'selected' : '' }}>Owner</option>
+        </select>
+        @error('role')
+            <div class="text-danger">{{ $message }}</div>
+        @enderror
     </div>
 
     <!-- Password Baru -->
-    <div class="form-group row mb-3">
+    <div class="form-group mb-3">
         <label for="password" class="col-md-4 col-form-label text-md-right">Password Baru</label>
-        <div class="col-md-6">
-            <input type="password" id="password" name="password"
-                  class="form-control @error('password') is-invalid @enderror">
-            @error('password')
-                <span class="invalid-feedback" role="alert">
-                    <strong>{{ $message }}</strong>
-                </span>
-            @enderror
-            <small class="form-text text-muted">Biarkan kosong jika tidak ingin mengubah password</small>
-        </div>
+        <input type="password" id="password" name="password"
+              class="form-control @error('password') is-invalid @enderror">
+        @error('password')
+            <span class="invalid-feedback" role="alert">
+                <strong>{{ $message }}</strong>
+            </span>
+        @enderror
+        <small class="form-text text-muted">Biarkan kosong jika tidak ingin mengubah password</small>
     </div>
 
     <!-- Konfirmasi Password -->
-    <div class="form-group row mb-3">
+    <div class="form-group mb-3">
         <label for="password_confirmation" class="col-md-4 col-form-label text-md-right">Konfirmasi Password</label>
-        <div class="col-md-6">
-            <input type="password" id="password_confirmation" name="password_confirmation"
-                  class="form-control">
-        </div>
+        <input type="password" id="password_confirmation" name="password_confirmation"
+              class="form-control">
     </div>
 
     <!-- Tombol Submit -->
-    <div class="form-group row mb-0">
-        <div class="col-md-6 offset-md-4">
-            <button type="submit" class="btn btn-sm btn-primary">
-                Simpan Perubahan
-            </button>
-        </div>
+    <div class="form-group mb-0">
+        <button type="submit" class="btn btn-sm btn-primary">
+            Simpan Perubahan
+        </button>
+        <a href="{{ route('user.index') }}" class="btn btn-sm btn-secondary">Kembali</a>
     </div>
 </form>
 

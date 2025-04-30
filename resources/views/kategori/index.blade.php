@@ -7,7 +7,7 @@
 <div class="container">
     <div class="row mb-4">
         <div class="col-md-12">
-            <a href="{{ route('kategori.create') }}" class="btn btn-primary">
+            <a href="{{ route('kategori.create') }}" class="btn btn-sm btn-primary">
                 <i class="fas fa-plus"></i> Tambah Data
             </a>
         </div>

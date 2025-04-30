@@ -7,7 +7,7 @@
 <div class="container">
     <div class="row mb-4">
         <div class="col-md-12">
-            <a href="{{ route('user.create') }}" class="btn btn-primary">
+            <a href="{{ route('user.create') }}" class="btn btn-sm btn-primary">
                 <i class="fas fa-plus"></i> Tambah Data
             </a>
         </div>
@@ -97,7 +97,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="5" class="text-center">No users found</td>
+                            <td colspan="6" class="text-center">Tidak ada data</td>
                         </tr>
                         @endforelse
                     </tbody>

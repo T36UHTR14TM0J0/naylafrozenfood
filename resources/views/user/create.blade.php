@@ -59,8 +59,8 @@
               </div>
             @enderror
         </div><!-- form-group -->
-        <button type="submit" class="btn btn-primary">Buat User</button>
-        <a href="{{ route('user.index') }}" class="btn btn-secondary">Kembali</a>
+        <button type="submit" class="btn btn-sm btn-primary">Buat User</button>
+        <a href="{{ route('user.index') }}" class="btn btn-sm btn-secondary">Kembali</a>
     </form>
 </div>
 @endsection

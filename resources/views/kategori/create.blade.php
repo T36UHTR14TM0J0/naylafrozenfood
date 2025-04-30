@@ -26,8 +26,8 @@
             @enderror
         </div>
 
-        <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Simpan</button>
-        <a href="{{ route('kategori.index') }}" class="btn btn-secondary">Kembali</a>
+        <button type="submit" class="btn btn-sm btn-primary"><i class="fas fa-save"></i> Simpan</button>
+        <a href="{{ route('kategori.index') }}" class="btn btn-sm btn-secondary">Kembali</a>
     </form>
 </div>
 @endsection
