@@ -32,7 +32,7 @@
         @if (auth()->user()->isOwner())
 
         <li class="pc-item">
-          <a href="#" class="pc-link">
+          <a href="{{ route('supplier.index') }}" class="pc-link">
             <span class="pc-micon"><i class="ti ti-truck-delivery"></i></span>
             <span class="pc-mtext">Suplier</span>
           </a>
