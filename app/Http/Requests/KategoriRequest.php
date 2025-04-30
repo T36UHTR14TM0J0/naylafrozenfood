@@ -28,7 +28,7 @@ class KategoriRequest extends FormRequest
                 'max:255',
                 'unique:kategoris,nama'
             ],
-            'desc' => 'required|string|max:1000',
+            'desc' => 'nullable|string|max:1000',
         ];
 
         // Jika metode update, abaikan unique untuk kategori saat ini
@@ -51,7 +51,6 @@ class KategoriRequest extends FormRequest
             'nama.string' => 'Nama kategori harus berupa teks',
             'nama.max' => 'Nama kategori tidak boleh lebih dari 255 karakter',
             'nama.unique' => 'Nama kategori sudah digunakan, harap gunakan nama lain',
-            'desc.required' => 'Deskripsi kategori wajib diisi',
             'desc.string' => 'Deskripsi harus berupa teks',
             'desc.max' => 'Deskripsi tidak boleh lebih dari 1000 karakter',
         ];

@@ -10,7 +10,7 @@
 
     <!-- Nama Lengkap -->
     <div class="form-group mb-3">
-        <label for="fullname" class="col-md-4 col-form-label text-md-right">Nama Lengkap</label>
+        <label for="fullname" class="col-md-4 col-form-label text-md-right">Nama Lengkap <span class="text-danger">*</span></label>
         <input type="text" id="fullname" name="name" class="form-control @error('name') is-invalid @enderror"  value="{{ old('name', $user->name) }}" required>
         @error('name') <!-- Ganti 'fullname' menjadi 'name' -->
             <span class="invalid-feedback" role="alert">
@@ -21,7 +21,7 @@
 
     <!-- Email -->
     <div class="form-group mb-3">
-        <label for="email" class="col-md-4 col-form-label text-md-right">Email</label>
+        <label for="email" class="col-md-4 col-form-label text-md-right">Email <span class="text-danger">*</span></label>
         <input type="email" id="email" name="email"
               class="form-control @error('email') is-invalid @enderror"
               value="{{ old('email', $user->email) }}" required>

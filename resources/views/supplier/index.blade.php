@@ -14,7 +14,10 @@
     </div>
 
     <!-- Filter Form -->
-    <div class="card mb-4">
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-white">
+            <h5 class="card-title mb-0"><i class="fas fa-filter me-2"></i>Filter Data</h5>
+        </div>
         <div class="card-body">
             <form method="GET" action="{{ route('supplier.index') }}">
                 <div class="row align-items-end">
@@ -22,7 +25,7 @@
                         <div class="form-group">
                             <label for="nama" class="form-label">Nama Supplier</label>
                             <input type="text" class="form-control" id="nama" name="nama"
-                                   value="{{ request('nama') }}" placeholder="Filter by nama">
+                                   value="{{ request('nama') }}" placeholder="Filter berdasarkan nama supplier">
                         </div>
                     </div>
                     <div class="col-md-4">
@@ -41,7 +44,7 @@
     </div>
 
     <!-- Users Table -->
-    <div class="card">
+    <div class="card shadow-sm">
         <div class="card-body">
             <div class="table-responsive">
                 <table class="table table-striped table-hover table-bordered">
@@ -67,7 +70,7 @@
                             <td>{{ $row->no_hp }}</td>
                             <td class="{{ (empty($row->desc) ? 'text-center' : '') }}">{{ (empty($row->desc) ? '-' : $row->desc) }}</td>
                             <td>{{ $row->status }}</td>
-                            <td>{{ $row->created_at->format('d M Y') }}</td>
+                            <td>{{ $row->created_at->translatedFormat('d F Y') }}</td>
                             <td class="text-center">
                                 <a href="{{ route('supplier.edit',$row->id) }}" class="btn btn-sm btn-primary" title="Edit">
                                     <i class="fas fa-edit"></i>
@@ -94,7 +97,7 @@
             <!-- Pagination -->
             <div class="d-flex justify-content-between align-items-center mt-3">
                 <div>
-                    Showing {{ $suppliers->firstItem() }} to {{ $suppliers->lastItem() }} of {{ $suppliers->total() }} entries
+                    Menampilkan {{ $suppliers->firstItem() }} sampai {{ $suppliers->lastItem() }} dari {{ $suppliers->total() }} entri
                 </div>
                 <div>
                     {{ $suppliers->links() }}

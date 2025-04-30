@@ -25,7 +25,7 @@
                     <div class="col-md-3">
                         <label for="nama" class="form-label">Nama Item</label>
                         <input type="text" class="form-control" id="nama" name="nama"
-                               value="{{ request('nama') }}" placeholder="Cari berdasarkan nama">
+                               value="{{ request('nama') }}" placeholder="Filter berdasarkan nama item">
                     </div>
                     <div class="col-md-3">
                         <label for="kategori" class="form-label">Kategori</label>
@@ -53,7 +53,7 @@
 
     <!-- Items Table -->
     <div class="card shadow-sm">
-        <div class="card-body p-0">
+        <div class="card-body">
             <div class="table-responsive">
                 <table class="table  table-striped table-hover table-bordered">
                     <thead class="bg-primary">
@@ -89,10 +89,10 @@
                             <td>{{ $item->satuan->nama ?? '-' }}</td>
                             <td>{{ $item->created_at->translatedFormat('d F Y') }}</td>
                             <td class="text-center">
-                                <a href="{{ route('item.edit', $item->id) }}" class="btn btn-sm btn-outline-primary" title="Edit">
+                                <a href="{{ route('item.edit', $item->id) }}" class="btn btn-sm btn-primary" title="Edit">
                                     <i class="fas fa-edit"></i>
                                 </a>
-                                <button class="btn btn-sm btn-outline-danger" title="Hapus"
+                                <button class="btn btn-sm btn-danger" title="Hapus"
                                         onclick="confirmDelete('{{ $item->id }}', '{{ $item->nama }}')">
                                     <i class="fas fa-trash-alt"></i>
                                 </button>
@@ -113,7 +113,7 @@
 
             <!-- Pagination -->
             @if($items->hasPages())
-            <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+            <div class=" d-flex justify-content-between align-items-center mt-3">
                 <div class="text-muted">
                     Menampilkan {{ $items->firstItem() }} sampai {{ $items->lastItem() }} dari {{ $items->total() }} entri
                 </div>

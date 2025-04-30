@@ -98,6 +98,6 @@ class SupplierController extends Controller
         $supplier->delete();
 
         // Arahkan kembali ke daftar supplier dengan pesan sukses
-        return redirect()->route('supplier.index')->with('success', 'Supplier berhasil dihapus');;
+        return redirect()->route('supplier.index')->with('success', 'Supplier berhasil dihapus');
     }
 }

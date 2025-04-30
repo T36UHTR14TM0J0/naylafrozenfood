@@ -10,7 +10,7 @@
 
     <!-- Nama Lengkap -->
     <div class="form-group mb-3">
-        <label for="nama" class="col-md-4 col-form-label text-md-right">Nama Satuan *</label>
+        <label for="nama" class="col-md-4 col-form-label text-md-right">Nama Satuan <span class="text-danger">*</span></label>
         <input type="text" id="nama" name="nama" class="form-control @error('nama') is-invalid @enderror"  value="{{ old('nama', $satuan->nama) }}" required>
         @error('nama') <!-- Ganti 'nama' menjadi 'name' -->
             <span class="invalid-feedback" role="alert">

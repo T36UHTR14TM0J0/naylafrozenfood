@@ -8,7 +8,7 @@
 
         <!-- Nama Item -->
         <div class="row mb-3">
-            <div class="col-md-6">
+            <div class="col-md-6 form-group">
                 <label for="nama" class="form-label">Nama Item <span class="text-danger">*</span></label>
                 <input type="text" id="nama" name="nama"
                         class="form-control @error('nama') is-invalid @enderror"
@@ -22,7 +22,7 @@
                 @enderror
             </div>
 
-            <div class="col-md-6">
+            <div class="col-md-6 form-group">
                 <label for="harga_jual" class="form-label">Harga Jual <span class="text-danger">*</span></label>
                 <input type="number" id="harga_jual" name="harga_jual"
                         class="form-control @error('harga_jual') is-invalid @enderror"
@@ -40,7 +40,7 @@
 
         <!-- Kategori dan Satuan -->
         <div class="row mb-3">
-            <div class="col-md-6">
+            <div class="col-md-6 form-group">
                 <label for="kategori_id" class="form-label">Kategori <span class="text-danger">*</span></label>
                 <select id="kategori_id" name="kategori_id"
                         class="form-select @error('kategori_id') is-invalid @enderror"
@@ -59,7 +59,7 @@
                 @enderror
             </div>
 
-            <div class="col-md-6">
+            <div class="col-md-6 form-group">
                 <label for="satuan_id" class="form-label">Satuan <span class="text-danger">*</span></label>
                 <select id="satuan_id" name="satuan_id"
                         class="form-select @error('satuan_id') is-invalid @enderror"

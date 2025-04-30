@@ -1,8 +1,6 @@
-<!-- resources/views/user/user.blade.php -->
-
-@extends('layout.app') <!-- Perhatikan penulisan 'layouts' (biasanya plural) -->
-@section('title', 'Data Kategori') <!-- Titik koma dihapus setelah string -->
-
+<!-- resources/views/kategori/index.blade.php -->
+@extends('layout.app')
+@section('title', 'Data Kategori')
 @section('content')
 <div class="container">
     <div class="row mb-4">
@@ -25,7 +23,7 @@
                         <div class="form-group">
                             <label for="nama" class="form-label">Nama Kategori</label>
                             <input type="text" class="form-control" id="nama" name="nama"
-                                   value="{{ request('nama') }}" placeholder="Filter by nama">
+                                   value="{{ request('nama') }}" placeholder="Filter berdasarkan nama kategori">
                         </div>
                     </div>
                     <div class="col-md-4">
@@ -63,8 +61,8 @@
                         <tr>
                             <td class="text-center"><?= $no++;?></td>
                             <td>{{ $row->nama }}</td>
-                            <td>{{ $row->desc }}</td>
-                            <td>{{ $row->created_at->format('d M Y') }}</td>
+                            <td class="{{ (empty($row->desc) ? 'text-center' : '') }}">{{ (empty($row->desc) ? '-' : $row->desc) }}</td>
+                            <td>{{ $row->created_at->translatedFormat('d F Y') }}</td>
                             <td class="text-center">
                                 <a href="{{ route('kategori.edit',$row->id) }}" class="btn btn-sm btn-primary" title="Edit">
                                     <i class="fas fa-edit"></i>
@@ -91,7 +89,7 @@
             <!-- Pagination -->
             <div class="d-flex justify-content-between align-items-center mt-3">
                 <div>
-                    Showing {{ $kategori->firstItem() }} to {{ $kategori->lastItem() }} of {{ $kategori->total() }} entries
+                    Menampilkan {{ $kategori->firstItem() }} sampai {{ $kategori->lastItem() }} dari {{ $kategori->total() }} entri
                 </div>
                 <div>
                     {{ $kategori->links() }}

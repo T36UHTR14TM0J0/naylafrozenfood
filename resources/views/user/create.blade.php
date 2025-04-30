@@ -1,14 +1,12 @@
 <!-- resources/views/user/create.blade.php -->
-
-@extends('layout.app') <!-- Pastikan ini sesuai dengan struktur folder Anda -->
+@extends('layout.app')
 @section('title', 'Tambah Data User')
-
 @section('content')
 <div class="container">
     <form method="POST" action="{{ route('user.store') }}">
         @csrf
         <div class="form-group mb-3">
-            <label class="form-label">Nama Lengkap *</label>
+            <label class="form-label">Nama Lengkap <span class="text-danger">*</span></label>
             <input type="text" id="name" name="name" class="form-control @error('name') is-invalid @enderror" placeholder="Masukkan nama lengkap" value="{{ old('name') }}">
             @error('name')
               <div class="invalid-feedback">
@@ -18,7 +16,7 @@
         </div>
 
         <div class="form-group mb-3">
-            <label class="form-label">Email *</label>
+            <label class="form-label">Email <span class="text-danger">*</span></label>
             <input type="email" id="email" name="email" class="form-control @error('email') is-invalid @enderror" placeholder="Masukkan email" value="{{ old('email') }}">
             @error('email')
               <div class="invalid-feedback">
@@ -59,7 +57,7 @@
               </div>
             @enderror
         </div><!-- form-group -->
-        <button type="submit" class="btn btn-sm btn-primary">Buat User</button>
+        <button type="submit" class="btn btn-sm btn-primary">Simpan</button>
         <a href="{{ route('user.index') }}" class="btn btn-sm btn-secondary">Kembali</a>
     </form>
 </div>

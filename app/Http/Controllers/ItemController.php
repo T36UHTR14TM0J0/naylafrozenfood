@@ -60,88 +60,95 @@ class ItemController extends Controller
      */
     public function store(ItemRequest $request)
     {
-        // Inisialisasi nama gambar sebagai null (default tidak ada gambar).
-        $imageName = null;
+        try {
+            // Inisialisasi nama gambar sebagai null (default tidak ada gambar).
+            $imageName = null;
 
-        // Jika ada file gambar yang diunggah, simpan gambar di folder 'products' dan dapatkan nama file.
-        if ($request->hasFile('gambar')) {
-            $imageName = $this->uploadImage($request->file('gambar'), 'Items');
+            // Jika ada file gambar yang diunggah, simpan gambar di folder 'products' dan dapatkan nama file.
+            if ($request->hasFile('gambar')) {
+                $imageName = $this->uploadImage($request->file('gambar'), 'Items');
+            }
+
+            // Buat produk baru dengan data yang telah divalidasi, sertakan nama gambar jika ada.
+            Item::create(array_merge(
+                $request->validated(),
+                ['gambar' => $imageName]
+            ));
+
+
+            return redirect()->route('item.index')
+                   ->with('success', 'Item berhasil ditambahkan');
+
+        } catch (\Exception $e) {
+            return redirect()->back()
+                   ->with('error', 'Terjadi kesalahan: '.$e->getMessage());
         }
 
-        // Buat produk baru dengan data yang telah divalidasi, sertakan nama gambar jika ada.
-        Item::create(array_merge(
-            $request->validated(),
-            ['gambar' => $imageName]
-        ));
-
-        // Arahkan pengguna kembali ke halaman daftar produk dengan pesan sukses.
-        return redirect()->route('item.index');
     }
 
-    // /**
-    //  * Tampilkan form untuk mengedit produk tertentu.
-    //  *
-    //  * @param  \App\Models\Product  $product
-    //  * @return \Inertia\Response
-    //  */
-    // public function edit($id)
-    // {
-    //     $product = Product::findOrFail($id);
-    //     // Ambil semua kategori dan unit dari database.
-    //     $categories = Category::all();
-    //     $units = Unit::all();
+    /**
+     * Tampilkan form untuk mengedit produk tertentu.
+     *
+     * @param  \App\Models\Product  $product
+     * @return \Inertia\Response
+     */
+    public function edit($id)
+    {
+        $items = Item::findOrFail($id);
+        // Ambil semua kategori dan unit dari database.
+        $kategoris = Kategori::all();
+        $satuans = Satuan::all();
 
-    //     // Kirim data produk, kategori, dan unit ke komponen Inertia 'Admin/Products/Edit'.
-    //     return inertia('Admin/Products/Edit', [
-    //         'product' => $product,
-    //         'categories' => $categories,
-    //         'units' => $units,
-    //     ]);
-    // }
+        return view('item.edit',['item' => $items ,'kategoris' => $kategoris,'satuans' => $satuans]);
+    }
 
-    // /**
-    //  * Perbarui data produk dalam database.
-    //  *
-    //  * @param  \App\Http\Requests\ProductRequest  $request
-    //  * @param  \App\Models\Product  $product
-    //  * @return \Illuminate\Http\RedirectResponse
-    //  */
-    // public function update(ProductRequest $request, Product $product)
-    // {
-    //     // Jika ada file gambar baru yang diunggah, perbarui gambar dan hapus gambar lama.
-    //     if ($request->hasFile('image')) {
-    //         $product->image = $this->updateImage($product->image, $request->file('image'), 'products');
-    //     }
+    /**
+     * Perbarui data produk dalam database.
+     *
+     * @param  \App\Http\Requests\ProductRequest  $request
+     * @param  \App\Models\Product  $product
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function update(ItemRequest $request, Item $item)
+    {
+        try {
+            // Jika ada file gambar baru yang diunggah, perbarui gambar dan hapus gambar lama.
+            if ($request->hasFile('gambar')) {
+                $item->gambar = $this->updateImage($item->gambar, $request->file('gambar'), 'items');
+            }
 
-    //     // Perbarui data produk dengan data yang diterima dari permintaan.
-    //     $product->name = $request->name;
-    //     $product->barcode = $request->barcode;
-    //     $product->category_id = $request->category_id;
-    //     $product->unit_id = $request->unit_id;
-    //     $product->selling_price = $request->selling_price;
-    //     $product->save();
+            // Perbarui data produk dengan data yang diterima dari permintaan.
+            $item->nama = $request->nama;
+            $item->kategori_id = $request->kategori_id;
+            $item->satuan_id = $request->satuan_id;
+            $item->harga_jual = $request->harga_jual;
+            $item->save();
 
-    //     // Arahkan pengguna kembali ke halaman daftar produk dengan pesan sukses.
-    //     return redirect()->route('admin.products.index');
-    // }
+            // Arahkan pengguna kembali ke halaman daftar produk dengan pesan sukses.
+            return redirect()->route('item.index')->with('success', 'Item berhasil diedit');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                   ->with('error', 'Terjadi kesalahan: '.$e->getMessage());
+        }
+    }
 
-    // /**
-    //  * Hapus produk dari database.
-    //  *
-    //  * @param  \App\Models\Product  $product
-    //  * @return \Illuminate\Http\RedirectResponse
-    //  */
-    // public function destroy(Product $product)
-    // {
-    //     // Jika produk memiliki gambar, hapus gambar dari folder 'products' di disk 'public'.
-    //     if ($product->image) {
-    //         Storage::disk('public')->delete('products/' . $product->image);
-    //     }
+    /**
+     * Hapus produk dari database.
+     *
+     * @param  \App\Models\Product  $product
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function destroy(Item $item)
+    {
+        // Jika produk memiliki gambar, hapus gambar dari folder 'items' di disk 'public'.
+        if ($item->gambar) {
+            Storage::disk('public')->delete('items/' . $item->gambar);
+        }
 
-    //     // Hapus data produk dari database.
-    //     $product->delete();
+        // Hapus data produk dari database.
+        $item->delete();
 
-    //     // Arahkan pengguna kembali ke halaman sebelumnya dengan pesan sukses.
-    //     return back();
-    // }
+        // Arahkan pengguna kembali ke halaman sebelumnya dengan pesan sukses.
+        return redirect()->route('item.index')->with('success', 'Item berhasil dihapus');
+    }
 }

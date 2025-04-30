@@ -25,7 +25,7 @@
                         <div class="form-group">
                             <label for="nama" class="form-label">Nama Satuan</label>
                             <input type="text" class="form-control" id="nama" name="nama"
-                                   value="{{ request('nama') }}" placeholder="Filter by nama">
+                                   value="{{ request('nama') }}" placeholder="Filter berdasarkan nama satuan">
                         </div>
                     </div>
                     <div class="col-md-4">
@@ -62,7 +62,7 @@
                         <tr>
                             <td class="text-center"><?= $no++;?></td>
                             <td>{{ $row->nama }}</td>
-                            <td>{{ $row->created_at->format('d M Y') }}</td>
+                            <td>{{ $row->created_at->translatedFormat('d F Y') }}</td>
                             <td class="text-center">
                                 <a href="{{ route('satuan.edit',$row->id) }}" class="btn btn-sm btn-primary" title="Edit">
                                     <i class="fas fa-edit"></i>
@@ -89,7 +89,7 @@
             <!-- Pagination -->
             <div class="d-flex justify-content-between align-items-center mt-3">
                 <div>
-                    Showing {{ $satuan->firstItem() }} to {{ $satuan->lastItem() }} of {{ $satuan->total() }} entries
+                    Menampilkan {{ $satuan->firstItem() }} sampai {{ $satuan->lastItem() }} dari {{ $satuan->total() }} entri
                 </div>
                 <div>
                     {{ $satuan->links() }}
