@@ -41,10 +41,10 @@ class ItemStockRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'item_id.required' => 'Item ID wajib diisi',
-            'item_id.exists' => 'Item ID tidak valid, harap pilih item yang ada',
-            'supplier_id.required' => 'Supplier ID wajib diisi',
-            'supplier_id.exists' => 'Supplier ID tidak valid, harap pilih supplier yang ada',
+            'item_id.required' => 'Item wajib diisi',
+            'item_id.exists' => 'Item tidak valid, harap pilih item yang ada',
+            'supplier_id.required' => 'Supplier wajib diisi',
+            'supplier_id.exists' => 'Supplier tidak valid, harap pilih supplier yang ada',
             'jumlah_stok.required' => 'Jumlah stok wajib diisi',
             'jumlah_stok.integer' => 'Jumlah stok harus berupa angka',
             'jumlah_stok.min' => 'Jumlah stok minimal 1'

@@ -79,7 +79,7 @@
                                     {{ ucfirst($user->role) }}
                                 </span>
                             </td>
-                            <td>{{ $user->created_at->translatedFormat('d F Y') }}</td>
+                            <td>{{ $user->created_at->locale('id')->translatedFormat('d F Y') }}</td>
                             <td>
                                 <a href="{{ route('user.show',$user->id) }}" class="btn btn-sm btn-info" title="View">
                                     <i class="fas fa-eye"></i>

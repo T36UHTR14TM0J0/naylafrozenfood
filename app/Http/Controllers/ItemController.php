@@ -19,7 +19,7 @@ class ItemController extends Controller
      */
     public function index()
     {
-        $items = Item::with(['kategori', 'satuan']) // Menambahkan eager loading untuk satuan
+        $items = Item::with(['kategori', 'satuan','stokTotal']) // Menambahkan eager loading untuk satuan
         ->when(request('nama'), function ($query) {
             $query->where('nama', 'like', '%' . request('nama') . '%');
         })

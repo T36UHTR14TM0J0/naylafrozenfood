@@ -70,7 +70,7 @@
                             <td>{{ $row->no_hp }}</td>
                             <td class="{{ (empty($row->desc) ? 'text-center' : '') }}">{{ (empty($row->desc) ? '-' : $row->desc) }}</td>
                             <td>{{ $row->status }}</td>
-                            <td>{{ $row->created_at->translatedFormat('d F Y') }}</td>
+                            <td>{{ $row->created_at->locale('id')->translatedFormat('d F Y') }}</td>
                             <td class="text-center">
                                 <a href="{{ route('supplier.edit',$row->id) }}" class="btn btn-sm btn-primary" title="Edit">
                                     <i class="fas fa-edit"></i>

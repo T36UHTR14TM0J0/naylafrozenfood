@@ -16,6 +16,8 @@ return new class extends Migration
             $table->foreignId('item_id')->constrained()->onDelete('cascade');
             $table->foreignId('supplier_id')->nullable()->constrained()->onDelete('set null');
             $table->integer('jumlah_stok')->default(0);
+            $table->enum('status', ['masuk', 'keluar'])->default('masuk');
+        
             $table->timestamps();
         });
     }

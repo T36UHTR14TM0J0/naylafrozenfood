@@ -8,20 +8,25 @@
 
         <!-- Nama Item -->
         <div class="row mb-3">
+            
             <div class="col-md-4 form-group">
-                <label for="nama" class="form-label">Nama Item <span class="text-danger">*</span></label>
-                <input type="text" id="nama" name="nama"
-                        class="form-control @error('nama') is-invalid @enderror"
-                        placeholder="Masukkan nama item"
-                        value="{{ $item['nama'] }}" readonly
+                <label for="item_id" class="form-label">Item <span class="text-danger">*</span></label>
+                <select id="item_id" name="item_id"
+                        class="form-select @error('item_id') is-invalid @enderror"
                         >
-                @error('nama')
+                    <option value="">Pilih item</option>
+                    @foreach($items as $item)
+                        <option value="{{ $item->id }}" {{ old('item_id') == $item->id ? 'selected' : '' }}>
+                            {{ $item->nama }}
+                        </option>
+                    @endforeach
+                </select>
+                @error('item_id')
                     <div class="invalid-feedback">
                         {{ $message }}
                     </div>
                 @enderror
             </div>
-
             <div class="col-md-4 form-group">
                 <label for="supplier_id" class="form-label">Supplier <span class="text-danger">*</span></label>
                 <select id="supplier_id" name="supplier_id"

@@ -1,13 +1,11 @@
-<!-- resources/views/user/user.blade.php -->
+@extends('layout.app') <!-- Fixed layout reference (usually plural) -->
 
-@extends('layout.app') <!-- Perhatikan penulisan 'layouts' (biasanya plural) -->
-@section('title', 'Data Item') <!-- Titik koma dihapus setelah string -->
+@section('title', 'Data Item')
 
 @section('content')
 <div class="container-fluid">
     <div class="row mb-4">
-        <div class="col-md-12 ">
-            {{-- <h4 class="mb-0"><i class="fas fa-boxes me-2"></i>Data Item</h4> --}}
+        <div class="col-md-12">
             <a href="{{ route('item.create') }}" class="btn btn-sm btn-primary">
                 <i class="fas fa-plus me-2"></i>Tambah Item
             </a>
@@ -53,27 +51,28 @@
 
     <!-- Items Table -->
     <div class="card shadow-sm">
-        <div class="card-body">
-            <div class="table-responsive" style="overflow: auto;">
-                <table class="table  table-striped table-hover table-bordered">
+        <div class="card-body p-0"> <!-- Added p-0 to remove inner padding -->
+            <div class="table-responsive" style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
+                <table class="table table-striped table-hover table-bordered mb-0">
                     <thead class="bg-primary">
                         <tr>
                             <th width="5%" class="text-white text-center">No</th>
                             <th width="10%" class="text-white text-center">Gambar</th>
-                            <th class="text-white text-center">Nama Item</th>
-                            <th class="text-white text-center">Harga Beli</th>
-                            <th class="text-white text-center">Harga Jual</th>
-                            <th class="text-white text-center">Kategori</th>
-                            <th class="text-white text-center">Satuan</th>
-                            <th class="text-white text-center">Tanggal Dibuat</th>
-                            <th width="5%" class="text-white text-center">Aksi</th>
+                            <th class="text-white text-center min-width-150">Nama Item</th>
+                            <th class="text-white text-center min-width-120">Harga Beli</th>
+                            <th class="text-white text-center min-width-120">Harga Jual</th>
+                            <th class="text-white text-center min-width-120">Kategori</th>
+                            <th class="text-white text-center min-width-100">Stok</th>
+                            <th class="text-white text-center min-width-100">Satuan</th>
+                            <th class="text-white text-center min-width-150">Tanggal Dibuat</th>
+                            <th width="5%" class="text-white text-center min-width-100">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse ($items as $index => $item)
                         <tr>
                             <td class="text-center">{{ $items->firstItem() + $index }}</td>
-                            <td>
+                            <td class="text-center">
                                 @if($item->gambar)
                                     <img src="{{ asset('storage/items/' . $item->gambar) }}" alt="{{ $item->nama }}"
                                          class="img-thumbnail" style="width: 80px; height: 80px; object-fit: cover;">
@@ -85,28 +84,31 @@
                                 @endif
                             </td>
                             <td>{{ $item->nama }}</td>
-                            <td>Rp {{ number_format($item->harga_beli, 0, ',', '.') }}</td>
-                            <td>Rp {{ number_format($item->harga_jual, 0, ',', '.') }}</td>
+                            <td class="text-nowrap">Rp {{ number_format($item->harga_beli, 0, ',', '.') }}</td>
+                            <td class="text-nowrap">Rp {{ number_format($item->harga_jual, 0, ',', '.') }}</td>
                             <td>{{ $item->kategori->nama ?? '-' }}</td>
+                            <td class="text-center">{{ $item->stokTotal->total_stok ?? '-' }}</td>
                             <td>{{ $item->satuan->nama ?? '-' }}</td>
-                            <td>{{ $item->created_at->translatedFormat('d F Y') }}</td>
+                            <td class="text-nowrap">{{ $item->created_at->locale('id')->translatedFormat('d F Y') }}</td>
                             <td class="text-center">
-                                <a href="{{ route('item.edit', $item->id) }}" class="btn btn-sm btn-primary mb-2" title="Edit">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <button class="btn btn-sm btn-danger" title="Hapus"
-                                        onclick="confirmDelete('{{ $item->id }}', '{{ $item->nama }}')">
-                                    <i class="fas fa-trash-alt"></i>
-                                </button>
-                                <form id="delete-form-{{ $item->id }}" action="{{ route('item.destroy', $item->id) }}" method="POST" class="d-none">
-                                    @csrf
-                                    @method('DELETE')
-                                </form>
+                                <div class="d-flex justify-content-center gap-1">
+                                    <a href="{{ route('item.edit', $item->id) }}" class="btn btn-sm btn-primary" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <button class="btn btn-sm btn-danger" title="Hapus"
+                                            onclick="confirmDelete('{{ $item->id }}', '{{ $item->nama }}')">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                    <form id="delete-form-{{ $item->id }}" action="{{ route('item.destroy', $item->id) }}" method="POST" class="d-none">
+                                        @csrf
+                                        @method('DELETE')
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="9" class="text-center py-4">Tidak ada data item ditemukan</td>
+                            <td colspan="10" class="text-center py-4">Tidak ada data item ditemukan</td>
                         </tr>
                         @endforelse
                     </tbody>
@@ -115,7 +117,7 @@
 
             <!-- Pagination -->
             @if($items->hasPages())
-            <div class=" d-flex justify-content-between align-items-center mt-3">
+            <div class="d-flex justify-content-between align-items-center mt-3 px-3"> <!-- Added px-3 for padding -->
                 <div class="text-muted">
                     Menampilkan {{ $items->firstItem() }} sampai {{ $items->lastItem() }} dari {{ $items->total() }} entri
                 </div>
@@ -128,5 +130,25 @@
     </div>
 </div>
 
-@endsection
+<style>
+    /* Add this to your CSS */
+    .min-width-100 { min-width: 100px; }
+    .min-width-120 { min-width: 120px; }
+    .min-width-150 { min-width: 150px; }
+    .table-responsive {
+        width: 100%;
+        margin-bottom: 15px;
+        overflow-y: hidden;
+        -ms-overflow-style: -ms-autohiding-scrollbar;
+        border: 1px solid #ddd;
+    }
+    .table-responsive > .table {
+        margin-bottom: 0;
+    }
+    .table-responsive > .table > thead > tr > th,
+    .table-responsive > .table > tbody > tr > td {
+        white-space: nowrap;
+    }
+</style>
 
+@endsection
