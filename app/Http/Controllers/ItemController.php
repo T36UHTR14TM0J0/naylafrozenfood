@@ -26,7 +26,7 @@ class ItemController extends Controller
         ->when(request('kategori_id'), function ($query) {
             $query->where('kategori_id', request('kategori_id'));
         })
-        ->select(['id', 'nama','gambar', 'harga_jual', 'kategori_id', 'satuan_id', 'created_at']) // Optimasi query
+        ->select(['id', 'nama','gambar', 'harga_beli','harga_jual', 'kategori_id', 'satuan_id', 'created_at']) // Optimasi query
         ->latest()
         ->paginate(10)
         ->withQueryString(); // Mempertahankan parameter filter

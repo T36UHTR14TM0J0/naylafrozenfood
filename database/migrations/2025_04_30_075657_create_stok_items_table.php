@@ -16,7 +16,6 @@ return new class extends Migration
             $table->foreignId('item_id')->constrained()->onDelete('cascade');
             $table->foreignId('supplier_id')->nullable()->constrained()->onDelete('set null');
             $table->integer('jumlah_stok')->default(0);
-            $table->date('tanggal_diterima')->nullable();
             $table->timestamps();
         });
     }

@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ItemController;
+use App\Http\Controllers\ItemStockController;
 use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SatuanController;
@@ -44,6 +45,7 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::resource('kategori', KategoriController::class);
     Route::resource('satuan', SatuanController::class);
     Route::resource('item', ItemController::class);
+    Route::resource('stok', ItemStockController::class);
 });
 
 // // Owner Routes

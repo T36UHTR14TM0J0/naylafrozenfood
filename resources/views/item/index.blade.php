@@ -38,7 +38,7 @@
                             @endforeach
                         </select>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         <button type="submit" class="btn btn-primary me-2">
                             <i class="fas fa-search me-1"></i> Filter
                         </button>
@@ -54,18 +54,19 @@
     <!-- Items Table -->
     <div class="card shadow-sm">
         <div class="card-body">
-            <div class="table-responsive">
+            <div class="table-responsive" style="overflow: auto;">
                 <table class="table  table-striped table-hover table-bordered">
                     <thead class="bg-primary">
                         <tr>
                             <th width="5%" class="text-white text-center">No</th>
                             <th width="10%" class="text-white text-center">Gambar</th>
                             <th class="text-white text-center">Nama Item</th>
-                            <th class="text-white text-center">Harga</th>
+                            <th class="text-white text-center">Harga Beli</th>
+                            <th class="text-white text-center">Harga Jual</th>
                             <th class="text-white text-center">Kategori</th>
                             <th class="text-white text-center">Satuan</th>
                             <th class="text-white text-center">Tanggal Dibuat</th>
-                            <th width="15%" class="text-white text-center">Aksi</th>
+                            <th width="5%" class="text-white text-center">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -84,12 +85,13 @@
                                 @endif
                             </td>
                             <td>{{ $item->nama }}</td>
+                            <td>Rp {{ number_format($item->harga_beli, 0, ',', '.') }}</td>
                             <td>Rp {{ number_format($item->harga_jual, 0, ',', '.') }}</td>
                             <td>{{ $item->kategori->nama ?? '-' }}</td>
                             <td>{{ $item->satuan->nama ?? '-' }}</td>
                             <td>{{ $item->created_at->translatedFormat('d F Y') }}</td>
                             <td class="text-center">
-                                <a href="{{ route('item.edit', $item->id) }}" class="btn btn-sm btn-primary" title="Edit">
+                                <a href="{{ route('item.edit', $item->id) }}" class="btn btn-sm btn-primary mb-2" title="Edit">
                                     <i class="fas fa-edit"></i>
                                 </a>
                                 <button class="btn btn-sm btn-danger" title="Hapus"
@@ -104,7 +106,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="8" class="text-center py-4">Tidak ada data item ditemukan</td>
+                            <td colspan="9" class="text-center py-4">Tidak ada data item ditemukan</td>
                         </tr>
                         @endforelse
                     </tbody>

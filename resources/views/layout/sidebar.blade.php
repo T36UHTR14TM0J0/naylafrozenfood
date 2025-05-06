@@ -60,7 +60,7 @@
         </li>
 
         <li class="pc-item">
-          <a href="#" class="pc-link">
+          <a href="{{ route('stok.index') }}" class="pc-link">
             <span class="pc-micon"><i class="ti ti-box-multiple"></i></span>
             <span class="pc-mtext">Kelola Stok</span>
           </a>

@@ -30,6 +30,7 @@ class ItemRequest extends FormRequest
                 'max:255',
                 'unique:items,nama,'.$itemId
             ],
+            'harga_beli' => 'required|numeric|min:0',
             'harga_jual' => 'required|numeric|min:0',
             'kategori_id' => 'required|exists:kategoris,id',
             'satuan_id' => 'required|exists:satuans,id',
@@ -56,6 +57,10 @@ class ItemRequest extends FormRequest
             'harga_jual.numeric' => 'Harga jual harus berupa angka',
             'harga_jual.min' => 'Harga jual tidak boleh kurang dari 0',
 
+            'harga_beli.required' => 'Harga beli wajib diisi',
+            'harga_beli.numeric' => 'Harga beli harus berupa angka',
+            'harga_beli.min' => 'Harga beli tidak boleh kurang dari 0',
+
             'kategori_id.required' => 'Kategori wajib dipilih',
             'kategori_id.exists' => 'Kategori yang dipilih tidak valid',
 
@@ -76,6 +81,7 @@ class ItemRequest extends FormRequest
     {
         return [
             'nama' => 'Nama Item',
+            'harga_beli' => 'Harga Beli',
             'harga_jual' => 'Harga Jual',
             'kategori_id' => 'Kategori',
             'satuan_id' => 'Satuan',

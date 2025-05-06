@@ -20,9 +20,10 @@
 <script src="{{ asset('js/fonts/custom-font.js')}}"></script>
 <script src="{{ asset('js/pcoded.js')}}"></script>
 <script src="{{ asset('js/plugins/feather.min.js')}}"></script>
+<script src="{{ asset('js/plugins/jquery.min.js')}}"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 @include('js_default.js_alert')
-
+@stack('scripts')
 
 
 
@@ -43,7 +44,7 @@
 
 <script>font_change("Public-Sans");</script>
 
-  
+
 
 
 </body>
