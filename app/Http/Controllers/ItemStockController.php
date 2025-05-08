@@ -16,27 +16,40 @@ class ItemStockController extends Controller
 {
     public function index()
     {
-        // Ambil data StockProduct beserta relasi product dan supplier.
+        // Tentukan default tanggal jika tanggal_awal atau tanggal_akhir tidak ada dalam request
+        $tanggalAwal = request('tanggal_awal') ?: now()->format('Y-m-d'); // Jika tidak ada tanggal_awal, set ke hari ini
+        $tanggalAkhir = request('tanggal_akhir') ?: now()->addDays(30)->format('Y-m-d'); // Jika tidak ada tanggal_akhir, set ke 30 hari ke depan
+
+        // Ambil data StokItem beserta relasi item dan supplier
         $productStocks = StokItem::with(['item', 'supplier'])
-            ->when(request('nama'), function ($query) {
-                $query->whereHas('supplier', function ($query) {
-                    $query->where('nama', 'like', '%' . request('nama') . '%');
-                });
+            ->when($tanggalAwal && $tanggalAkhir, function ($query) use ($tanggalAwal, $tanggalAkhir) {
+                $query->whereBetween('created_at', [$tanggalAwal, $tanggalAkhir]);
             })
-            ->latest()
+            ->when(request('status'), function ($query) {
+                $query->where('status', request('status'));
+            })
+            ->orderBy('created_at', 'desc') // Mengurutkan berdasarkan tanggal terbaru
             ->paginate(10);
 
         // Ambil semua supplier untuk dropdown jika diperlukan
         $suppliers = Supplier::all();
 
         // Sertakan parameter pencarian 'nama' di link paginasi
-        $productStocks->appends(['nama' => request('nama')]);
+        $productStocks->appends([
+            'nama' => request('nama'),
+            'tanggal_awal' => $tanggalAwal, 
+            'tanggal_akhir' => $tanggalAkhir, 
+            'status' => request('status')
+        ]);
 
-        $items = Item::with('kategori')->get(); // Sesuaikan dengan model Anda
-        $categories = Kategori::all(); // Untuk filter kategori
+        // Ambil semua item untuk dropdown kategori
+        $items = Item::with('kategori')->get();
+        $categories = Kategori::all();
 
-        return view('item_stok.index', compact('productStocks', 'suppliers','items','categories'));
+        return view('item_stok.index', compact('productStocks', 'suppliers', 'items', 'categories'));
     }
+
+
 
     public function create(Request $request)
     {
@@ -51,78 +64,79 @@ class ItemStockController extends Controller
         DB::beginTransaction();
 
         try {
-            // Create new StockItem record with validated data
+            // Membuat record StokItem baru dengan data yang telah divalidasi
             $stockItem = StokItem::create($request->validated());
             
-            // Find or create StockTotal for the related item_id
+            // Mencari atau membuat StokTotal untuk item_id yang terkait
             $stokTotal = StokTotal::firstOrCreate(
                 ['item_id' => $stockItem->item_id],
-                ['total_stok' => 0]  // Changed from 'jumlah_stok' to match your usage below
+                ['total_stok' => 0]  // Mengubah dari 'jumlah_stok' agar sesuai dengan penggunaan Anda di bawah
             );
 
-            // Add the stock quantity to the total
+            // Menambahkan jumlah stok ke total stok
             $stokTotal->total_stok += $stockItem->jumlah_stok;
             $stokTotal->save();
 
             DB::commit();
 
             return redirect()->route('stok.index')
-                ->with('success', 'Item stock added successfully!');
+                ->with('success', 'Stok item berhasil ditambahkan!');
                 
         } catch (\Exception $e) {
             DB::rollBack();
-                   
+                
             return redirect()->route('stok.index')
-                ->with('error', 'Failed to add item stock. Please try again.');
+                ->with('error', 'Gagal menambahkan stok item. Silakan coba lagi.');
         }
     }
 
+
     public function destroy($id)
     {
-        // Start database transaction to ensure data consistency
+        // Memulai transaksi database untuk memastikan konsistensi data
         DB::beginTransaction();
 
         try {
-            // Validate that the ID is numeric
+            // Validasi bahwa ID adalah numerik
             if (!is_numeric($id)) {
-                throw new \InvalidArgumentException("Invalid ID provided");
+                throw new \InvalidArgumentException("ID yang diberikan tidak valid");
             }
 
-            // Find the StockProduct by ID or throw an exception
+            // Mencari StokItem berdasarkan ID atau melemparkan pengecualian
             $stockProduct = StokItem::findOrFail($id);
 
-            // Find the related StockTotal
+            // Mencari StokTotal yang terkait
             $stockTotal = StokTotal::where('item_id', $stockProduct->item_id)->first();
 
             if ($stockTotal) {
-                // Calculate new total stock
+                // Menghitung stok total yang baru
                 $newTotal = $stockTotal->total_stok - $stockProduct->jumlah_stok;
                 
-                // Prevent negative stock
+                // Menghindari stok negatif
                 $stockTotal->total_stok = max(0, $newTotal);
                 
-                // Save changes to StockTotal
+                // Menyimpan perubahan ke StokTotal
                 if (!$stockTotal->save()) {
-                    throw new \RuntimeException("Failed to update stock total");
+                    throw new \RuntimeException("Gagal memperbarui total stok");
                 }
             }
 
-            // Delete the stock product record
+            // Menghapus record stok item
             if (!$stockProduct->delete()) {
-                throw new \RuntimeException("Failed to delete stock item");
+                throw new \RuntimeException("Gagal menghapus stok item");
             }
 
-            // Commit transaction if all operations succeeded
+            // Commit transaksi jika semua operasi berhasil
             DB::commit();
 
-            // Redirect with success message
+            // Redirect dengan pesan sukses
             return redirect()->route('stok.index')
-                ->with('success', 'Stock item deleted successfully');
+                ->with('success', 'Stok item berhasil dihapus');
                 
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             DB::rollBack();
             return redirect()->route('stok.index')
-                ->with('error', 'Stock item not found');
+                ->with('error', 'Stok item tidak ditemukan');
                 
         } catch (\InvalidArgumentException $e) {
             DB::rollBack();
@@ -131,11 +145,12 @@ class ItemStockController extends Controller
                 
         } catch (\Exception $e) {
             DB::rollBack();
-            // Log the error for debugging
+            // Menyimpan log kesalahan untuk keperluan debug
             \Log::error('Error deleting stock item: ' . $e->getMessage());
             
             return redirect()->route('stok.index')
-                ->with('error', 'Failed to delete stock item. Please try again.');
+                ->with('error', 'Gagal menghapus stok item. Silakan coba lagi.');
         }
     }
+
 }
