@@ -61,4 +61,15 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
 
 ## Cara Instal di Local
+1. download source code di link berikut https://github.com/T36UHTR14TM0J0/naylafrozenfood.git
+2. extract dan copy paste kedalam htdocs
+3. lalu buka project kedalam visual studio code
+4. buat file atau copy paste file .env.example dan ubah nama menjadi .env
+5. lalu buka terminal
+6. install dependensi laravel dengan ketik perintah : composer install
+7. php artisan key:generate
+8. php artisan migrate
+9. php artisan db:seed --class=UserSeeder
+10. lalu php artisan serve
+11. buka chrome http://127.0.0.1:8000
 
