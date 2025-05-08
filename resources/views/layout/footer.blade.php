@@ -22,6 +22,12 @@
 <script src="{{ asset('js/plugins/feather.min.js')}}"></script>
 <script src="{{ asset('js/plugins/jquery.min.js')}}"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- Menambahkan JS Select2 -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
+
 @include('js_default.js_alert')
 @stack('scripts')
 

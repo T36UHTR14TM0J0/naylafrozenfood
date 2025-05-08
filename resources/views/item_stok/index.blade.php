@@ -22,22 +22,26 @@
             <form method="GET" action="{{ route('stok.index') }}">
                 <div class="row g-3 align-items-end">
                     <div class="col-md-3">
-                        <label for="nama" class="form-label">Nama Supplier</label>
-                        <input type="text" class="form-control" id="nama" name="nama"
-                               value="{{ request('nama') }}" placeholder="Filter berdasarkan nama supplier">
+                        <label class="form-label">Tanggal Awal</label>
+                        <input type="date" name="tanggal_awal" id="tanggal_awal" class="form-control" value="{{ request('tanggal_awal') }}">
                     </div>
-                    {{-- <div class="col-md-3">
-                        <label for="kategori" class="form-label">Kategori</label>
-                        <select class="form-select" id="kategori" name="kategori_id">
+                    <div class="col-md-3">
+                        <label class="form-label">Tanggal Akhir</label>
+                        <input type="date" name="tanggal_akhir" id="tanggal_akhir" class="form-control" value="{{ request('tanggal_akhir') }}">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="status" class="form-label">Pilih Status</label>
+                        <select class="form-select" id="status" name="status">
                             <option value="">Semua Kategori</option>
-                            @foreach($kategoris as $kategori)
-                                <option value="{{ $kategori->id }}" {{ request('kategori_id') == $kategori->id ? 'selected' : '' }}>
-                                    {{ $kategori->nama }}
+                                <option value="masuk" {{ request('status') == 'masuk' ? 'selected' : '' }}>
+                                    Masuk
                                 </option>
-                            @endforeach
+                                <option value="keluar" {{ request('status') == 'keluar' ? 'selected' : '' }}>
+                                    Keluar
+                                </option>
                         </select>
-                    </div> --}}
-                    <div class="col-md-4">
+                    </div>
+                    <div class="col-md-3">
                         <button type="submit" class="btn btn-primary me-2">
                             <i class="fas fa-search me-1"></i> Filter
                         </button>
@@ -59,10 +63,10 @@
                         <tr>
                             <th width="5%" class="text-white text-center">No</th>
                             <th class="text-white text-center">Nama Item</th>
-                            <th class="text-white text-center">Nama Supplier</th>
-                            <th  width="5%" class="text-white text-center">Jumlah Stok</th>
+                            <th  width="20%" class="text-white text-center">Nama Supplier</th>
+                            <th  width="5%" class="text-white text-center">Jumlah</th>
                             <th  width="5%" class="text-white text-center">Status</th>
-                            <th class="text-white text-center">Tanggal</th>
+                            <th width="20%" class="text-white text-center">Tanggal</th>
                             <th width="5%" class="text-white text-center">Aksi</th>
                         </tr>
                     </thead>
@@ -109,6 +113,59 @@
         </div>
     </div>
 </div>
+@push('scripts')
+<div class="col-md-3">
+    <label class="form-label">Tanggal Awal</label>
+    <input type="date" name="tanggal_awal" id="tanggal_awal" class="form-control" value="{{ request('tanggal_awal') }}">
+</div>
 
+<div class="col-md-3">
+    <label class="form-label">Tanggal Akhir</label>
+    <input type="date" name="tanggal_akhir" id="tanggal_akhir" class="form-control" value="{{ request('tanggal_akhir') }}">
+</div>
+
+<script>
+    // Fungsi untuk format tanggal ke format yang dibutuhkan (YYYY-MM-DD)
+    function formatDate(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Menambahkan 0 di depan bulan yang kurang dari 10
+        const day = String(date.getDate()).padStart(2, '0'); // Menambahkan 0 di depan hari yang kurang dari 10
+        return `${year}-${month}-${day}`;
+    }
+
+    // Mendapatkan elemen input tanggal
+    const tanggalAwal = document.getElementById('tanggal_awal');
+    const tanggalAkhir = document.getElementById('tanggal_akhir');
+
+    // Mengatur tanggal awal dan akhir dengan default 30 hari
+    document.addEventListener('DOMContentLoaded', function() {
+        const today = new Date(); // Tanggal hari ini
+        const thirtyDaysLater = new Date(today);
+        thirtyDaysLater.setDate(today.getDate() + 30); // Menambahkan 30 hari ke tanggal hari ini
+
+        // Menetapkan nilai default untuk tanggal awal dan akhir
+        tanggalAwal.value = formatDate(today); // Tanggal awal = hari ini
+        tanggalAkhir.value = formatDate(thirtyDaysLater); // Tanggal akhir = 30 hari ke depan
+    });
+
+    // Fungsi untuk memvalidasi tanggal akhir tidak lebih kecil dari tanggal awal
+    tanggalAwal.addEventListener('change', function() {
+        const startDate = new Date(tanggalAwal.value);
+        if (startDate > new Date(tanggalAkhir.value) && tanggalAkhir.value !== '') {
+            tanggalAkhir.value = '';  // Reset tanggal akhir jika tidak valid
+        }
+        tanggalAkhir.setAttribute('min', tanggalAwal.value); // Membatasi tanggal akhir agar tidak lebih kecil dari tanggal awal
+    });
+
+    // Fungsi untuk memvalidasi tanggal awal tidak lebih besar dari tanggal akhir
+    tanggalAkhir.addEventListener('change', function() {
+        const endDate = new Date(tanggalAkhir.value);
+        if (endDate < new Date(tanggalAwal.value) && tanggalAwal.value !== '') {
+            tanggalAwal.value = '';  // Reset tanggal awal jika tidak valid
+        }
+        tanggalAwal.setAttribute('max', tanggalAkhir.value); // Membatasi tanggal awal agar tidak lebih besar dari tanggal akhir
+    });
+</script>
+@endpush
 @endsection
 

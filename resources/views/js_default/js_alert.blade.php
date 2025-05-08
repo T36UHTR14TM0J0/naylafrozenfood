@@ -1,4 +1,6 @@
 <script>
+    $('.select2').select2();
+
   // Fungsi dasar SweetAlert
     function showSuccessAlert(message) {
         Swal.fire({

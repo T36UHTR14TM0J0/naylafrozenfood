@@ -26,6 +26,10 @@
   <!-- [Template CSS Files] -->
   <link rel="stylesheet" href="{{ asset('css/style.css')}}" id="main-style-link" >
   <link rel="stylesheet" href="{{ asset('css/style-preset.css')}}" >
+  
+  <!-- Menambahkan CSS Select2 -->
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
+
 
 </head>
 <!-- [Head] end -->

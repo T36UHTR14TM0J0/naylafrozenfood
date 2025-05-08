@@ -2,6 +2,46 @@
 @section('title', 'Tambah Stok Item')
 
 @section('content')
+<style>
+    /* Menyesuaikan Select2 dengan Bootstrap 5 */
+    .select2-container--default .select2-selection--single {
+        height: calc(2.25rem + 2px); /* Sama dengan tinggi input di Bootstrap 5 */
+        padding: 0.375rem 0.75rem;
+        border: 1px solid #ced4da;
+        border-radius: 0.375rem;
+        font-size: 1rem;
+        line-height: 1.5;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        line-height: 1.5;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: calc(2.25rem + 2px);
+        right: 10px;
+        top: 50%;
+        margin-top: -10px;
+    }
+
+    .select2-container--default .select2-search--dropdown .select2-search__field {
+        height: calc(2.25rem + 2px);
+        padding: 0.375rem 0.75rem;
+        font-size: 1rem;
+        line-height: 1.5;
+    }
+
+    /* Fokus dengan border biru seperti di Bootstrap 5 */
+    .select2-container--default .select2-selection--single:focus {
+        border-color: #86b7fe;
+        box-shadow: 0 0 0 0.2rem rgba(13,110,253,.25);
+    }
+
+    .select2-container--default .select2-results__option {
+        font-size: 1rem;
+    }
+
+</style>
 <div class="container">
     <form method="POST" action="{{ route('stok.store') }}">
         @csrf
@@ -12,7 +52,7 @@
             <div class="col-md-4 form-group">
                 <label for="item_id" class="form-label">Item <span class="text-danger">*</span></label>
                 <select id="item_id" name="item_id"
-                        class="form-select @error('item_id') is-invalid @enderror"
+                        class="select2 form-select  @error('item_id') is-invalid @enderror"
                         >
                     <option value="">Pilih item</option>
                     @foreach($items as $item)
@@ -30,7 +70,7 @@
             <div class="col-md-4 form-group">
                 <label for="supplier_id" class="form-label">Supplier <span class="text-danger">*</span></label>
                 <select id="supplier_id" name="supplier_id"
-                        class="form-select @error('supplier_id') is-invalid @enderror"
+                        class="select2 form-select @error('supplier_id') is-invalid @enderror"
                         >
                     <option value="">Pilih supplier</option>
                     @foreach($suppliers as $supplier)
@@ -64,12 +104,12 @@
 
 
         <div class="mt-4">
-            <button type="submit" class="btn btn-primary">
-                Simpan
-            </button>
             <a href="{{ route('stok.index') }}" class="btn btn-secondary">
                 Kembali
             </a>
+            <button type="submit" class="btn btn-primary">
+                Simpan
+            </button>
         </div>
     </form>
 </div>

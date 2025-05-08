@@ -30,8 +30,8 @@
         <!-- [ sample-page ] start -->
         <div class="col-sm-12">
           <div class="card">
-            <div class="card-header">
-              <h2>@yield('title')</h2>
+            <div class="card-header bg-primary ">
+              <h2 class="text-light">@yield('title')</h2>
             </div>
             <div class="card-body">
               @yield('content')

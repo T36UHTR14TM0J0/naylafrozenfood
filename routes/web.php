@@ -9,7 +9,9 @@ use App\Http\Controllers\ItemStockController;
 use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SatuanController;
+use App\Http\Controllers\TransaksiController;
 use App\Http\Controllers\UserController;
+
 
 // use App\Http\Controllers\Admin\AdminController;
 // use App\Http\Controllers\Owner\OwnerController;
@@ -46,6 +48,7 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::resource('satuan', SatuanController::class);
     Route::resource('item', ItemController::class);
     Route::resource('stok', ItemStockController::class);
+    Route::get('/transaksi', [TransaksiController::class, 'index'])->name('transaksi.index');
 });
 
 // // Owner Routes
