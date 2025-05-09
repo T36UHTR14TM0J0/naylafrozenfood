@@ -8,9 +8,10 @@
 6. install dependensi laravel dengan ketik perintah : composer install
 7. php artisan key:generate
 8. php artisan migrate
-9. php artisan db:seed --class=UserSeeder
-10. lalu php artisan serve
-11. buka chrome http://127.0.0.1:8000
+9. php artisan storage:link
+10. php artisan db:seed --class=UserSeeder
+11. lalu php artisan serve
+12. buka chrome http://127.0.0.1:8000
 
 
 
