@@ -1,3 +1,20 @@
+
+## Cara Instal di Local
+1. download source code di link berikut https://github.com/T36UHTR14TM0J0/naylafrozenfood.git
+2. extract dan copy paste kedalam htdocs
+3. lalu buka project kedalam visual studio code
+4. buat file atau copy paste file .env.example dan ubah nama menjadi .env
+5. lalu buka terminal
+6. install dependensi laravel dengan ketik perintah : composer install
+7. php artisan key:generate
+8. php artisan migrate
+9. php artisan storage:link
+10. php artisan db:seed --class=UserSeeder
+11. lalu php artisan serve
+12. buka chrome http://127.0.0.1:8000
+
+
+
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
 <p align="center">
@@ -59,6 +76,3 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-
-## Cara Instal di Local
-
