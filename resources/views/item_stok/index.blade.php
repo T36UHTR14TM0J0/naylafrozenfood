@@ -29,7 +29,7 @@
                         <label class="form-label">Tanggal Akhir</label>
                         <input type="date" name="tanggal_akhir" id="tanggal_akhir" class="form-control" value="{{ request('tanggal_akhir') }}">
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <label for="status" class="form-label">Pilih Status</label>
                         <select class="form-select" id="status" name="status">
                             <option value="">Semua Kategori</option>
@@ -41,7 +41,7 @@
                                 </option>
                         </select>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         <button type="submit" class="btn btn-primary me-2">
                             <i class="fas fa-search me-1"></i> Filter
                         </button>
