@@ -77,7 +77,12 @@
                             <td>{{ $productStockstok->item->nama }}</td>
                             <td>{{ $productStockstok->supplier->nama ?? '-' }}</td>
                             <td class="text-center">{{ $productStockstok->jumlah_stok ?? '-' }}</td>
-                            <td class="text-center">{{ $productStockstok->status ?? '' }}</td>
+                            <td class="text-center">
+                                <span class="badge bg-{{ $productStockstok->status == 'masuk' ? 'success' : 'danger' }}">
+                                    {{ ucfirst($productStockstok->status) }}
+                                </span>
+                            </td>
+                            
                             <td class="text-center">{{ $productStockstok->created_at->locale('id')->translatedFormat('d F Y') }}</td>
                             <td class="text-center">
                                 <button class="btn btn-sm btn-danger" title="Hapus"
