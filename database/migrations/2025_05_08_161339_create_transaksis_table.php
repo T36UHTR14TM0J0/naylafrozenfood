@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('transaksis', function (Blueprint $table) {
-            $table->id();
+            $table->bigInteger('id')->primary();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('faktur')->unique();
             $table->string('total_transaksi');

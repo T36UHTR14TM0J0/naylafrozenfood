@@ -49,6 +49,7 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::resource('item', ItemController::class);
     Route::resource('stok', ItemStockController::class);
     Route::get('/transaksi', [TransaksiController::class, 'index'])->name('transaksi.index');
+    Route::post('/transaksi/store', [TransaksiController::class, 'store'])->name('transaksi.store');
 });
 
 // // Owner Routes

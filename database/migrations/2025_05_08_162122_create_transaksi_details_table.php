@@ -13,10 +13,15 @@ return new class extends Migration
     {
         Schema::create('transaksi_details', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('transaksi_id')->constrained()->cascadeOnDelete();
+            $table->bigInteger('transaksi_id'); // Sesuai dengan tipe di transaksis
+            $table->foreign('transaksi_id')
+                ->references('id')
+                ->on('transaksis')
+                ->onDelete('cascade');
+            
             $table->foreignId('item_id')->constrained()->cascadeOnDelete();
             $table->integer('jumlah');
-            $table->bigInteger('total_harga'); 
+            $table->bigInteger('total_harga');
             $table->timestamps();
         });
     }
