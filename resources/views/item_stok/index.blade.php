@@ -119,15 +119,6 @@
     </div>
 </div>
 @push('scripts')
-<div class="col-md-3">
-    <label class="form-label">Tanggal Awal</label>
-    <input type="date" name="tanggal_awal" id="tanggal_awal" class="form-control" value="{{ request('tanggal_awal') }}">
-</div>
-
-<div class="col-md-3">
-    <label class="form-label">Tanggal Akhir</label>
-    <input type="date" name="tanggal_akhir" id="tanggal_akhir" class="form-control" value="{{ request('tanggal_akhir') }}">
-</div>
 
 <script>
     // Fungsi untuk format tanggal ke format yang dibutuhkan (YYYY-MM-DD)
