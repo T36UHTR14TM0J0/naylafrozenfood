@@ -39,14 +39,14 @@
                         <td class="text-center">{{ $item->nama }}</td>
                         <td class="text-center">Rp {{ number_format($item->harga_jual, 0, ',', '.') }}</td>
                         <td class="text-center">
-                            @if($item->stokTotal && $item->stokTotal->total_stok > 0)
+                            @if($item->stokTotal && $item->stokTotal->total_stok !== NULL)
                                 {{ $item->stokTotal->total_stok . ' ' . ($item->satuan ? $item->satuan->nama : '') }}
                             @else
                                 <span class="text-danger">Stok Habis</span>
                             @endif
                         </td>
                         <td class="text-center">
-                            @if($item->stokTotal && $item->stokTotal->total_stok > 0)
+                            @if($item->stokTotal && $item->stokTotal->total_stok !== NULL)
                                 <button class="btn btn-success btn-sm add-to-cart" 
                                         data-id="{{ $item->id }}" 
                                         data-name="{{ $item->nama }}" 
