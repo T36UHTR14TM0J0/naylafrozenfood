@@ -121,6 +121,7 @@ class ItemController extends Controller
             $item->nama = $request->nama;
             $item->kategori_id = $request->kategori_id;
             $item->satuan_id = $request->satuan_id;
+            $item->harga_beli = $request->harga_beli;
             $item->harga_jual = $request->harga_jual;
             $item->save();
 
