@@ -351,12 +351,15 @@
         submitBtn.innerHTML = '<i class="bi bi-arrow-repeat spin"></i> Memproses...';
         submitBtn.disabled = true;
 
+        // Get CSRF token
+        const csrfTokenMeta = document.querySelector('meta[name="csrf-token"]');
+        const csrfToken = csrfTokenMeta ? csrfTokenMeta.content : '';
         // Submit data
         fetch('{{ route("transaksi.store") }}', {
             method: 'POST',
             body: formData,
             headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'X-CSRF-TOKEN': csrfToken,
                 'Accept': 'application/json'
             }
         })
@@ -411,8 +414,8 @@
         
         let receiptHTML = `
             <div class="receipt text-center">
-                <h4>Toko Anda</h4>
-                <p>Jl. Alamat Toko No. 123</p>
+                <h4>Nayla Frozen Food</h4>
+                <p>Jl. Raya Kemiri, Kemiri, Kec. Jayakerta, Karawang, Jawa Barat 41352</p>
                 <p>Telp: 08123456789</p>
                 <hr>
                 <p>${formattedDate}</p>
