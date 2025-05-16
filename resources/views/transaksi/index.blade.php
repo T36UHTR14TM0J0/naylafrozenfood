@@ -323,38 +323,145 @@
         document.getElementById('change_hidden').value = change >= 0 ? change : 0;
     }
 
-    function processPayment(paymentMethod) {
-        // Validation
-        if (document.querySelectorAll('[name="item_id[]"]').length === 0) {
-            Swal.fire('Error', 'Silahkan tambahkan produk terlebih dahulu', 'error');
-            return;
-        }
+    // function processPayment(paymentMethod) {
+    //     // Validation
+    //     if (document.querySelectorAll('[name="item_id[]"]').length === 0) {
+    //         Swal.fire('Error', 'Silahkan tambahkan produk terlebih dahulu', 'error');
+    //         return;
+    //     }
 
-        const totalBayar = parseFloat(document.getElementById('payment_hidden').value) || 0;
-        const totalTransaksi = parseFloat(document.getElementById('total_amount_hidden').value) || 0;
+    //     const totalBayar = parseFloat(document.getElementById('payment_hidden').value) || 0;
+    //     const totalTransaksi = parseFloat(document.getElementById('total_amount_hidden').value) || 0;
         
-        if (paymentMethod === 'cash' && totalBayar < totalTransaksi) {
-            Swal.fire('Error', 'Pembayaran kurang dari total transaksi', 'error');
-            return;
-        }
+    //     if (paymentMethod === 'cash' && totalBayar < totalTransaksi) {
+    //         Swal.fire('Error', 'Pembayaran kurang dari total transaksi', 'error');
+    //         return;
+    //     }
 
-        // Prepare form data
-        const formData = new FormData(document.getElementById('form-transaksi'));
-        formData.append('metode_pembayaran', paymentMethod);
-        formData.append('total_transaksi', totalTransaksi);
-        formData.append('total_bayar', totalBayar);
-        formData.append('kembalian', Math.max(0, totalBayar - totalTransaksi));
+    //     // Prepare form data
+    //     const formData = new FormData(document.getElementById('form-transaksi'));
+    //     formData.append('metode_pembayaran', paymentMethod);
+    //     formData.append('total_transaksi', totalTransaksi);
+    //     formData.append('total_bayar', totalBayar);
+    //     formData.append('kembalian', Math.max(0, totalBayar - totalTransaksi));
 
-        // Show loading
-        const submitBtn = document.getElementById(`btn-${paymentMethod}`);
-        const originalText = submitBtn.innerHTML;
-        submitBtn.innerHTML = '<i class="bi bi-arrow-repeat spin"></i> Memproses...';
-        submitBtn.disabled = true;
+    //     // Show loading
+    //     const submitBtn = document.getElementById(`btn-${paymentMethod}`);
+    //     const originalText = submitBtn.innerHTML;
+    //     submitBtn.innerHTML = '<i class="bi bi-arrow-repeat spin"></i> Memproses...';
+    //     submitBtn.disabled = true;
 
-        // Get CSRF token
-        const csrfTokenMeta = document.querySelector('meta[name="csrf-token"]');
-        const csrfToken = csrfTokenMeta ? csrfTokenMeta.content : '';
-        // Submit data
+    //     // Get CSRF token
+    //     const csrfTokenMeta = document.querySelector('meta[name="csrf-token"]');
+    //     const csrfToken = csrfTokenMeta ? csrfTokenMeta.content : '';
+    //     // Submit data
+    //     fetch('{{ route("transaksi.store") }}', {
+    //         method: 'POST',
+    //         body: formData,
+    //         headers: {
+    //             'X-CSRF-TOKEN': csrfToken,
+    //             'Accept': 'application/json'
+    //         }
+    //     })
+    //     .then(response => response.json())
+    //     .then(data => {
+    //         if (data.success) {
+    //             showReceipt({
+    //                 transaction_id: data.transaction_id,
+    //                 items: Array.from(document.querySelectorAll('[name="item_id[]"]')).map((item, index) => ({
+    //                     name: item.closest('tr').querySelector('td').textContent.trim(),
+    //                     quantity: document.querySelectorAll('[name="item_quantity[]"]')[index].value,
+    //                     subtotal: parseFloat(document.querySelectorAll('[name="item_total[]"]')[index].value)
+    //                 })),
+    //                 subtotal: Array.from(document.querySelectorAll('[name="item_total[]"]')).reduce((sum, input) => sum + parseFloat(input.value), 0),
+    //                 discount: parseFloat(document.getElementById('discount').value) || 0,
+    //                 total: totalTransaksi,
+    //                 payment: totalBayar,
+    //                 change: parseFloat(document.getElementById('change_hidden').value),
+    //                 payment_method: paymentMethod,
+    //                 cashier: '{{ auth()->user()->name }}'
+    //             });
+                
+    //             // Reset form
+    //             document.getElementById('form-transaksi').reset();
+    //             document.getElementById('item-list').innerHTML = '';
+    //             document.getElementById('total_amount_display').value = '';
+    //             document.getElementById('payment_display').value = '';
+    //             document.getElementById('change_display').value = '';
+    //         } else {
+    //             throw new Error(data.message || 'Transaksi gagal');
+    //         }
+    //     })
+    //     .catch(error => {
+    //         Swal.fire('Error', error.message, 'error');
+    //     })
+    //     .finally(() => {
+    //         submitBtn.innerHTML = originalText;
+    //         submitBtn.disabled = false;
+    //     });
+    // }
+
+
+function processPayment(paymentMethod) {
+    // Validation
+    if (document.querySelectorAll('[name="item_id[]"]').length === 0) {
+        Swal.fire('Error', 'Silahkan tambahkan produk terlebih dahulu', 'error');
+        return;
+    }
+
+    const totalBayar = parseFloat(document.getElementById('payment_hidden').value) || 0;
+    const totalTransaksi = parseFloat(document.getElementById('total_amount_hidden').value) || 0;
+    
+    // Check if payment is sufficient for cash method
+    if (paymentMethod === 'cash' && totalBayar < totalTransaksi) {
+        Swal.fire('Error', 'Pembayaran kurang dari total transaksi', 'error');
+        return;
+    }
+
+    // Prepare form data
+    const formData = new FormData(document.getElementById('form-transaksi'));
+    formData.append('metode_pembayaran', paymentMethod);
+    formData.append('total_transaksi', totalTransaksi);
+    formData.append('total_bayar', totalBayar);
+    formData.append('kembalian', Math.max(0, totalBayar - totalTransaksi));
+
+    // Show loading
+    const submitBtn = document.getElementById(`btn-${paymentMethod}`);
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="bi bi-arrow-repeat spin"></i> Memproses...';
+    submitBtn.disabled = true;
+
+    // Get CSRF token from meta tag
+    const csrfTokenMeta = document.querySelector('meta[name="csrf-token"]');
+    const csrfToken = csrfTokenMeta ? csrfTokenMeta.content : '';
+    
+    // Handle QRIS payment method
+    if (paymentMethod === 'qris') {
+        fetch("{{ route('create.qris.transaction') }}", {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRF-TOKEN': csrfToken,
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showQRIS(data.snap_token); // Show the QRIS payment
+            } else {
+                throw new Error(data.message || 'Transaksi gagal');
+            }
+        })
+        .catch(error => {
+            Swal.fire('Error', error.message, 'error');
+        })
+        .finally(() => {
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+        });
+    } else {
+        // Handle other payment methods (Cash, for example)
         fetch('{{ route("transaksi.store") }}', {
             method: 'POST',
             body: formData,
@@ -400,6 +507,25 @@
             submitBtn.disabled = false;
         });
     }
+}
+
+
+    function showQRIS(snapToken) {
+        // Call Midtrans Snap API to show the QR code
+        snap.pay(snapToken, {
+            onSuccess: function(result) {
+                Swal.fire('Pembayaran Berhasil', 'Pembayaran menggunakan QRIS berhasil', 'success');
+                // Optionally, you can show receipt here
+            },
+            onPending: function(result) {
+                Swal.fire('Pembayaran Menunggu', 'Pembayaran Anda sedang diproses', 'info');
+            },
+            onError: function(result) {
+                Swal.fire('Pembayaran Gagal', 'Terjadi kesalahan saat memproses pembayaran QRIS', 'error');
+            }
+        });
+    }
+
 
     function showReceipt(transactionData) {
         const now = new Date();

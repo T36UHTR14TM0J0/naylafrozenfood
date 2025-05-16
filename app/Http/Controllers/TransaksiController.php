@@ -8,6 +8,8 @@ use App\Models\Transaksi;
 use App\Models\TransaksiDetail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Midtrans\Snap;
 
 class TransaksiController extends Controller
 {
@@ -48,8 +50,9 @@ class TransaksiController extends Controller
             // Generate unique transaction ID
             $transactionId = $this->generateTransactionId();
 
+            // Membuat transaksi
             $transaction = Transaksi::create([
-                'id'                => $transactionId, // Simpan ID yang dihasilkan
+                'id'                => $transactionId,
                 'user_id'           => auth()->id(),
                 'total_transaksi'   => $validated['total_amount'],
                 'total_bayar'       => $validated['payment'],
@@ -57,7 +60,7 @@ class TransaksiController extends Controller
                 'diskon'            => $validated['discount'] ?? 0,
                 'metode_pembayaran' => $validated['metode_pembayaran'],
                 'tanggal_transaksi' => now(),
-                'status'            => 'success',
+                'status'            => 'pending', // Status transaksi pertama adalah 'pending' jika menggunakan QRIS
             ]);
 
             // Simpan detail transaksi
@@ -69,23 +72,47 @@ class TransaksiController extends Controller
                     'total_harga' => $validated['item_price'][$index] * $validated['item_quantity'][$index],
                 ]);
 
-                // Update stok item (jika perlu)
+                // Update stok item
                 $item = Item::find($itemId);
-                $item->stokTotal->total_stok = (int)$item->stokTotal->total_stok - (int)$validated['item_quantity'][$index];
+                $item->stokTotal->total_stok -= (int)$validated['item_quantity'][$index];
                 $item->stokTotal->save();
 
-                $item_keluar = StokItem::create([
+                // Simpan keluar stok
+                StokItem::create([
                     'item_id' => $itemId,
                     'jumlah_stok' => $validated['item_quantity'][$index],
                     'status'    => 'keluar'
                 ]);
             }
 
+            // Proses pembayaran berdasarkan metode
+            if ($validated['metode_pembayaran'] == 'qris') {
+                // Jika metode QRIS, buat transaksi QRIS di Midtrans
+                $qrisResponse = $this->createTransaction($request); // Memanggil metode untuk QRIS
+                if ($qrisResponse['success']) {
+                    // Mengupdate transaksi dengan status 'pending' menunggu pembayaran QRIS
+                    $transaction->update(['status' => 'pending']);
+                    return response()->json([
+                        'success'           => true,
+                        'transaction_id'    => $transactionId,
+                        'snap_token'        => $qrisResponse['snap_token'], // Kembalikan token QRIS untuk frontend
+                        'message'           => 'Transaksi QRIS berhasil, silakan bayar dengan QRIS.',
+                    ]);
+                } else {
+                    throw new \Exception("QRIS payment failed: " . $qrisResponse['message']);
+                }
+            }
+
+            // Jika metode pembayaran adalah Cash, update status transaksi menjadi 'success'
+            if ($validated['metode_pembayaran'] == 'cash') {
+                $transaction->update(['status' => 'success']);
+            }
+
             DB::commit();
 
             return response()->json([
                 'success'           => true,
-                'transaction_id'    => $transactionId, // Menggunakan ID yang dihasilkan
+                'transaction_id'    => $transactionId,
                 'message'           => 'Transaksi berhasil',
             ]);
 
@@ -97,6 +124,7 @@ class TransaksiController extends Controller
             ], 500);
         }
     }
+
 
     private function generateTransactionId()
     {
@@ -116,5 +144,71 @@ class TransaksiController extends Controller
 
         return $date . $formattedNumber; // Gabungkan dmy dan nomor urut
     }
+
+
+
+    public function createTransaction(Request $request)
+    {
+        // Get the server key and client key from config
+        $serverKey = config('midtrans.server_key');
+        $clientKey = config('midtrans.client_key');
+
+        // Initialize Midtrans API
+        \Midtrans\Config::$serverKey = $serverKey;
+        \Midtrans\Config::$clientKey = $clientKey;
+        \Midtrans\Config::$isProduction = config('midtrans.is_production');
+        \Midtrans\Config::$isSanitized = true;
+        \Midtrans\Config::$is3ds = true;
+
+        $transaction_details = array(
+            'order_id' => 'ORDER-' . rand(1000, 9999),  // Unique order ID
+            'gross_amount' => $request->total_transaksi,  // Total amount for the transaction
+        );
+
+        $item_details = [];
+        foreach ($request->item_id as $key => $item_id) {
+            $item_details[] = array(
+                'id' => 'item-' . $item_id,
+                'price' => $request->item_price[$key],
+                'quantity' => $request->item_quantity[$key],
+                'name' => $request->item_name[$key] ?? 'Unnamed Item', // Default value if null
+            );
+        }
+
+        $customer_details = [
+            'first_name' => 'Customer Name',
+            'email' => 'customer@example.com',
+            'phone' => '08123456789',
+            'billing_address' => [
+                'address' => 'Address',
+                'city' => 'City',
+                'postal_code' => 'PostalCode',
+                'country_code' => 'IDN',
+            ],
+        ];
+
+        $transaction_data = [
+            'transaction_details' => $transaction_details,
+            'item_details' => $item_details,
+            'customer_details' => $customer_details,
+        ];
+
+        try {
+            // Generate the Snap token
+            $snapToken = Snap::getSnapToken($transaction_data);
+
+            // Check if Snap token was generated
+            if (!$snapToken) {
+                throw new \Exception("Snap Token could not be generated.");
+            }
+
+            return response()->json(['success' => true, 'snap_token' => $snapToken]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
+
+
+
 
 }
