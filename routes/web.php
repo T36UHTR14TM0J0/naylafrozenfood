@@ -66,7 +66,7 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::post('/create-qris-transaction', [TransaksiController::class, 'createTransaction'])->name('create.qris.transaction');
     
     // Callback Routes
-    Route::match(['GET', 'POST'], '/transaksi/callback', [TransaksiController::class, 'handleCallback']);
+    Route::match(['GET', 'POST'], '/transaksi/callback', [TransaksiController::class, 'handleCallback'])->name('transaksi.callback');
 });
 
 // Owner Routes
