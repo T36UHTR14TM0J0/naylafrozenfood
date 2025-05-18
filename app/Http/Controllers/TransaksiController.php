@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Midtrans\Snap;
+use Midtrans\Config;
 
 class TransaksiController extends Controller
 {
@@ -22,9 +23,7 @@ class TransaksiController extends Controller
             $query->where('nama', 'like', '%'.$search.'%');
         }
         
-        $items = $query->paginate(10); // Sesuaikan jumlah item per halaman
-
-        // Mengirim data ke view
+        $items = $query->paginate(10);
         return view('transaksi.index', compact('items'));
     }
 
@@ -46,78 +45,101 @@ class TransaksiController extends Controller
 
         try {
             DB::beginTransaction();
+            $isQris         = $validated['metode_pembayaran'] === 'qris';
 
-            // Generate unique transaction ID
-            $transactionId = $this->generateTransactionId();
+            // Validasi pembayaran tunai
+            if (!$isQris && $validated['payment'] < $validated['total_amount']) {
+                throw new \Exception("Pembayaran tunai tidak mencukupi total transaksi");
+            }
+
+            // Hitung diskon jika ada
+            $discountAmount = 0;
+            if (!empty($validated['discount'])) {
+                $discountAmount = ($validated['total_amount'] * $validated['discount']) / 100;
+            }
 
             // Membuat transaksi
             $transaction = Transaksi::create([
-                'id'                => $transactionId,
                 'user_id'           => auth()->id(),
                 'total_transaksi'   => $validated['total_amount'],
                 'total_bayar'       => $validated['payment'],
                 'kembalian'         => $validated['kembalian'] ?? 0,
-                'diskon'            => $validated['discount'] ?? 0,
+                'diskon'            => $discountAmount,
                 'metode_pembayaran' => $validated['metode_pembayaran'],
                 'tanggal_transaksi' => now(),
-                'status'            => 'pending', // Status transaksi pertama adalah 'pending' jika menggunakan QRIS
+                'status'            => $isQris ? 'pending' : 'success',
             ]);
 
             // Simpan detail transaksi
             foreach ($validated['item_id'] as $index => $itemId) {
+                $item = Item::with('stokTotal')->findOrFail($itemId);
+                
+                // Validasi stok
+                if ($item->stokTotal->total_stok < $validated['item_quantity'][$index]) {
+                    throw new \Exception("Stok item {$item->nama} tidak mencukupi");
+                }
+
+                $subtotal = $validated['item_price'][$index] * $validated['item_quantity'][$index];
+                
                 TransaksiDetail::create([
-                    'transaksi_id' => $transactionId,
-                    'item_id' => $itemId,
-                    'jumlah' => $validated['item_quantity'][$index],
-                    'total_harga' => $validated['item_price'][$index] * $validated['item_quantity'][$index],
+                    'transaksi_id'  => $transaction->id,
+                    'item_id'       => $itemId,
+                    'jumlah'        => $validated['item_quantity'][$index],
+                    'total_harga'   => $subtotal,
                 ]);
 
                 // Update stok item
-                $item = Item::find($itemId);
                 $item->stokTotal->total_stok -= (int)$validated['item_quantity'][$index];
                 $item->stokTotal->save();
 
                 // Simpan keluar stok
                 StokItem::create([
-                    'item_id' => $itemId,
-                    'jumlah_stok' => $validated['item_quantity'][$index],
-                    'status'    => 'keluar'
+                    'item_id'       => $itemId,
+                    'jumlah_stok'   => $validated['item_quantity'][$index],
+                    'status'        => 'keluar'
                 ]);
             }
 
-            // Proses pembayaran berdasarkan metode
-            if ($validated['metode_pembayaran'] == 'qris') {
-                // Jika metode QRIS, buat transaksi QRIS di Midtrans
-                $qrisResponse = $this->createTransaction($request); // Memanggil metode untuk QRIS
-                if ($qrisResponse['success']) {
-                    // Mengupdate transaksi dengan status 'pending' menunggu pembayaran QRIS
-                    $transaction->update(['status' => 'pending']);
-                    return response()->json([
-                        'success'           => true,
-                        'transaction_id'    => $transactionId,
-                        'snap_token'        => $qrisResponse['snap_token'], // Kembalikan token QRIS untuk frontend
-                        'message'           => 'Transaksi QRIS berhasil, silakan bayar dengan QRIS.',
-                    ]);
-                } else {
+            // Proses pembayaran QRIS jika dipilih
+            if ($isQris) {
+                $qrisResponse = $this->createQrisTransaction($transaction, $validated);
+                
+                if (!$qrisResponse['success']) {
                     throw new \Exception("QRIS payment failed: " . $qrisResponse['message']);
                 }
-            }
 
-            // Jika metode pembayaran adalah Cash, update status transaksi menjadi 'success'
-            if ($validated['metode_pembayaran'] == 'cash') {
-                $transaction->update(['status' => 'success']);
+                // Update transaksi dengan data QRIS
+                $transaction->update([
+                    // 'snap_token' => $qrisResponse['snap_token'],
+                    'url_tautan_pembayaran' => $qrisResponse['redirect_url'] ?? null
+                ]);
+
+                DB::commit();
+
+                return response()->json([
+                    'success'        => true,
+                    'transaction_id' => $transaction->id,
+                    'snap_token'    => $qrisResponse['snap_token'],
+                    'redirect_url'  => $qrisResponse['redirect_url'],
+                    'message'      => 'Transaksi QRIS berhasil, silakan selesaikan pembayaran.',
+                ]);
             }
 
             DB::commit();
 
             return response()->json([
-                'success'           => true,
-                'transaction_id'    => $transactionId,
-                'message'           => 'Transaksi berhasil',
+                'success'        => true,
+                'transaction_id' => $transaction->id,
+                'message'       => 'Transaksi tunai berhasil',
             ]);
 
         } catch (\Exception $e) {
             DB::rollBack();
+            Log::error('Transaction Error: ' . $e->getMessage(), [
+                'trace'   => $e->getTraceAsString(),
+                'request' => $request->all()
+            ]);
+            
             return response()->json([
                 'success' => false,
                 'message' => 'Transaksi gagal: ' . $e->getMessage(),
@@ -125,90 +147,124 @@ class TransaksiController extends Controller
         }
     }
 
-
-    private function generateTransactionId()
+    private function createQrisTransaction($transaction, $validated)
     {
-        // Format dmy
-        $date = now()->format('dmy');
-        
-        // Ambil nomor urut terakhir dari transaksi yang ada
-        $lastTransaction = Transaksi::where('id', 'like', $date . '%')
-            ->orderBy('id', 'desc')
-            ->first();
 
-        // Jika tidak ada transaksi sebelumnya, mulai dari 1
-        $nextNumber = $lastTransaction ? (int)substr($lastTransaction->id, 6) + 1 : 1;
-
-        // Format nomor urut dengan 3 digit
-        $formattedNumber = str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
-
-        return $date . $formattedNumber; // Gabungkan dmy dan nomor urut
-    }
-
-
-
-    public function createTransaction(Request $request)
-    {
-        // Get the server key and client key from config
-        $serverKey = config('midtrans.server_key');
-        $clientKey = config('midtrans.client_key');
-
-        // Initialize Midtrans API
-        \Midtrans\Config::$serverKey = $serverKey;
-        \Midtrans\Config::$clientKey = $clientKey;
-        \Midtrans\Config::$isProduction = config('midtrans.is_production');
-        \Midtrans\Config::$isSanitized = true;
-        \Midtrans\Config::$is3ds = true;
-
-        $transaction_details = array(
-            'order_id' => 'ORDER-' . rand(1000, 9999),  // Unique order ID
-            'gross_amount' => $request->total_transaksi,  // Total amount for the transaction
-        );
-
-        $item_details = [];
-        foreach ($request->item_id as $key => $item_id) {
-            $item_details[] = array(
-                'id' => 'item-' . $item_id,
-                'price' => $request->item_price[$key],
-                'quantity' => $request->item_quantity[$key],
-                'name' => $request->item_name[$key] ?? 'Unnamed Item', // Default value if null
-            );
+        // dd($transaction);
+        // die;
+        // Validasi konfigurasi Midtrans
+        if (empty(config('midtrans.server_key')) || empty(config('midtrans.client_key'))) {
+            throw new \Exception("Konfigurasi pembayaran tidak valid");
         }
 
-        $customer_details = [
-            'first_name' => 'Customer Name',
-            'email' => 'customer@example.com',
-            'phone' => '08123456789',
-            'billing_address' => [
-                'address' => 'Address',
-                'city' => 'City',
-                'postal_code' => 'PostalCode',
-                'country_code' => 'IDN',
-            ],
-        ];
+        Config::$serverKey    = config('midtrans.server_key');
+        Config::$isProduction = config('midtrans.is_production');
+        Config::$isSanitized  = true;
+        Config::$is3ds        = true;
 
+        // Siapkan item details
+        $item_details = [];
+        $totalCalculated = 0;
+        
+        foreach ($validated['item_id'] as $index => $itemId) {
+            $item = Item::findOrFail($itemId);
+            $itemTotal = $validated['item_price'][$index] * $validated['item_quantity'][$index];
+            
+            $item_details[] = [
+                'id'       => 'item-'.$itemId,
+                'price'    => $validated['item_price'][$index],
+                'quantity' => $validated['item_quantity'][$index],
+                'name'     => $item->nama,
+            ];
+            
+            $totalCalculated += $itemTotal;
+        }
+
+        // Tambahkan diskon sebagai item negatif jika ada
+        if ($transaction->diskon > 0) {
+            $item_details[] = [
+                'id'       => 'discount',
+                'price'    => -$transaction->diskon,
+                'quantity' => 1,
+                'name'    => 'Diskon',
+            ];
+        }
+
+        // Data transaksi untuk Midtrans
         $transaction_data = [
-            'transaction_details' => $transaction_details,
+            'transaction_details' => [
+                'order_id'     => $transaction->id,
+                'gross_amount' => $validated['total_amount'] - $transaction->diskon,
+            ],
             'item_details' => $item_details,
-            'customer_details' => $customer_details,
+            'customer_details'  => [
+                'first_name'    => 'Customer',
+                'email'         => 'customer@example.com',
+            ],
+            'enabled_payments' => ['gopay'],
+            'callbacks' => [
+                'finish' => route('transaksi.callback')
+            ],
+            'expiry' => [
+                'start_time' => now()->format('Y-m-d H:i:s O'),
+                'unit'      => 'minutes',
+                'duration'  => 30
+            ]
         ];
 
         try {
-            // Generate the Snap token
             $snapToken = Snap::getSnapToken($transaction_data);
-
-            // Check if Snap token was generated
-            if (!$snapToken) {
-                throw new \Exception("Snap Token could not be generated.");
+            
+            if (empty($snapToken)) {
+                throw new \Exception("Gagal membuat transaksi QRIS");
             }
 
-            return response()->json(['success' => true, 'snap_token' => $snapToken]);
+            return [
+                'success'     => true,
+                'snap_token' => $snapToken,
+                'redirect_url' => config('midtrans.is_production') 
+                    ? 'https://app.midtrans.com/snap/v2/vtweb/'.$snapToken
+                    : 'https://app.sandbox.midtrans.com/snap/v2/vtweb/'.$snapToken,
+            ];
         } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => $e->getMessage()]);
+            Log::error('Midtrans Error: '.$e->getMessage(), [
+                'transaction' => $transaction->id,
+                'error'      => $e->getTraceAsString()
+            ]);
+            
+            return [
+                'success' => false,
+                'message' => 'Error QRIS: '.$e->getMessage()
+            ];
         }
     }
 
 
 
+    // Callback handler untuk Midtrans
+    public function handleCallback(Request $request)
+    {
+        $orderId = $request->order_id;
+        $statusCode = $request->status_code;
+        $transactionStatus = $request->transaction_status;
 
+        $transaction = Transaksi::find($orderId);
+        if (!$transaction) {
+            return response()->json(['status' => 'error', 'message' => 'Transaction not found'], 404);
+        }
+
+        if ($transaction->status !== 'pending') {
+            return response()->json(['status' => 'success', 'message' => 'Transaction already processed']);
+        }
+
+        if ($statusCode == 200 && $transactionStatus == 'settlement') {
+            $transaction->update(['status' => 'success']);
+            return response()->json(['status' => 'success', 'message' => 'Payment successful']);
+        } elseif (in_array($transactionStatus, ['deny', 'cancel', 'expire'])) {
+            $transaction->update(['status' => 'failed']);
+            return response()->json(['status' => 'failed', 'message' => 'Payment failed']);
+        }
+
+        return response()->json(['status' => 'pending', 'message' => 'Waiting for payment']);
+    }
 }
