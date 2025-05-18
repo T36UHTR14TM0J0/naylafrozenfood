@@ -201,7 +201,7 @@ class TransaksiController extends Controller
             'item_details' => $item_details,
             'customer_details'  => [
                 'first_name'    => 'Customer',
-                'email'         => 'customer@example.com',
+                'email'         => 'teguhtriatmojo23@gmail.com',
             ],
             'enabled_payments' => ['gopay'],
             'callbacks' => [
