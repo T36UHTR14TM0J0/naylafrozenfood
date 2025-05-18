@@ -63,6 +63,7 @@ class TransaksiController extends Controller
                 'user_id'           => auth()->id(),
                 'total_transaksi'   => $validated['total_amount'],
                 'total_bayar'       => $validated['payment'],
+                 'faktur'           => 'INV-' . now()->format('YmdHis') . '-' . strtoupper(Str::random(5)),
                 'kembalian'         => $validated['kembalian'] ?? 0,
                 'diskon'            => $discountAmount,
                 'metode_pembayaran' => $validated['metode_pembayaran'],
@@ -193,7 +194,7 @@ class TransaksiController extends Controller
         // Data transaksi untuk Midtrans
         $transaction_data = [
             'transaction_details' => [
-                'order_id'     => $transaction->id,
+                'order_id'     => $transaction->faktur,
                 'gross_amount' => $validated['total_amount'] - $transaction->diskon,
             ],
             'item_details' => $item_details,

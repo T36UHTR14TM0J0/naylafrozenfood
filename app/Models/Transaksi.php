@@ -27,7 +27,7 @@ class Transaksi extends Model
         // Menambahkan logika khusus saat transaksi dibuat
         static::creating(function ($transaksi) {
             // Menghasilkan invoice dengan format INV-YYYYMMDDHHMMSS-RANDOM5
-            $transaksi->faktur = 'INV-' . now()->format('YmdHis') . '-' . strtoupper(Str::random(5));
+           
 
             // Menetapkan tanggal transaksi jika belum diisi
             if (empty($transaksi->tanggal_transaksi)) {
