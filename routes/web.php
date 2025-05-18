@@ -66,9 +66,7 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::post('/create-qris-transaction', [TransaksiController::class, 'createTransaction'])->name('create.qris.transaction');
     
     // Callback Routes
-    Route::post('/transaksi/callback', [TransaksiController::class, 'handleCallback'])
-    ->name('transaksi.callback')
-    ->withoutMiddleware(['csrf']); // Nonaktifkan CSRF untuk eksternal API
+    Route::match(['GET', 'POST'], '/transaksi/callback', [TransaksiController::class, 'handleCallback']);
 });
 
 // Owner Routes
