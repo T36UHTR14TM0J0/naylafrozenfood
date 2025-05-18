@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Midtrans\Snap;
+use Illuminate\Support\Str;
 use Midtrans\Config;
 
 class TransaksiController extends Controller
