@@ -244,83 +244,83 @@ class TransaksiController extends Controller
 
 
     // Callback handler untuk Midtrans
-    public function handleCallback(Request $request)
-    {
-        // Ambil payload dari request
-        $payload        = $request->getContent();
-        $notification   = json_decode($payload);
+    // public function handleCallback(Request $request)
+    // {
+    //     // Ambil payload dari request
+    //     $payload        = $request->getContent();
+    //     $notification   = json_decode($payload);
 
-        // Verifikasi signature untuk memastikan keamanan
-        $signatureKey = hash('sha512',
-            $notification->order_id .
-            $notification->status_code .
-            $notification->gross_amount .
-            config('midtrans.server_key')
-        );
+    //     // Verifikasi signature untuk memastikan keamanan
+    //     $signatureKey = hash('sha512',
+    //         $notification->order_id .
+    //         $notification->status_code .
+    //         $notification->gross_amount .
+    //         config('midtrans.server_key')
+    //     );
 
-        if ($notification->signature_key !== $signatureKey) {
-            return;
-        }
+    //     if ($notification->signature_key !== $signatureKey) {
+    //         return;
+    //     }
 
-        // Ambil data status transaksi dan tipe pembayaran
-        $transactionStatus  = $notification->transaction_status;
-        $paymentType        = $notification->payment_type;
-        $orderId            = $notification->order_id;
+    //     // Ambil data status transaksi dan tipe pembayaran
+    //     $transactionStatus  = $notification->transaction_status;
+    //     $paymentType        = $notification->payment_type;
+    //     $orderId            = $notification->order_id;
 
-        // Cari transaksi berdasarkan invoice yang sama dengan order_id
-        $transaction = Transaksi::where('faktur', $orderId)->first();
+    //     // Cari transaksi berdasarkan invoice yang sama dengan order_id
+    //     $transaction = Transaksi::where('faktur', $orderId)->first();
 
-        if (!$transaction) {
-            return;
-        }
+    //     if (!$transaction) {
+    //         return;
+    //     }
 
-        // Tentukan status transaksi berdasarkan status dari Midtrans
-        switch ($transactionStatus) {
-            case 'capture':
-                $transaction->update([
-                    'status' => 'success',
-                    'metode_pembayaran' => 'qris',
-                ]);
-                break;
+    //     // Tentukan status transaksi berdasarkan status dari Midtrans
+    //     switch ($transactionStatus) {
+    //         case 'capture':
+    //             $transaction->update([
+    //                 'status' => 'success',
+    //                 'metode_pembayaran' => 'qris',
+    //             ]);
+    //             break;
 
-            case 'settlement':
-                $transaction->update([
-                    'status' => 'success',
-                    'metode_pembayaran' => 'qris',
-                ]);
-                break;
+    //         case 'settlement':
+    //             $transaction->update([
+    //                 'status' => 'success',
+    //                 'metode_pembayaran' => 'qris',
+    //             ]);
+    //             break;
 
-            case 'pending':
-                $transaction->update([
-                    'status' => 'pending',
-                    'metode_pembayaran' => 'qris',
-                ]);
-                break;
+    //         case 'pending':
+    //             $transaction->update([
+    //                 'status' => 'pending',
+    //                 'metode_pembayaran' => 'qris',
+    //             ]);
+    //             break;
 
-            case 'deny':
-                $transaction->update([
-                    'status' => 'failed',
-                    'metode_pembayaran' => 'qris',
-                ]);
-                break;
+    //         case 'deny':
+    //             $transaction->update([
+    //                 'status' => 'failed',
+    //                 'metode_pembayaran' => 'qris',
+    //             ]);
+    //             break;
 
-            case 'expire':
-                $transaction->update([
-                    'status' => 'expired',
-                    'metode_pembayaran' => 'qris',
-                ]);
-                break;
+    //         case 'expire':
+    //             $transaction->update([
+    //                 'status' => 'expired',
+    //                 'metode_pembayaran' => 'qris',
+    //             ]);
+    //             break;
 
-            case 'cancel':
-                $transaction->update([
-                    'status' => 'failed',
-                    'metode_pembayaran' => 'qris',
-                ]);
-                break;
+    //         case 'cancel':
+    //             $transaction->update([
+    //                 'status' => 'failed',
+    //                 'metode_pembayaran' => 'qris',
+    //             ]);
+    //             break;
 
-            default:
-                return;
-        }
+    //         default:
+    //             return;
+    //     }
 
-    }
+    // }
 }

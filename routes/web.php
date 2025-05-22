@@ -52,8 +52,8 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::post('/transaksi/store', [TransaksiController::class, 'store'])->name('transaksi.store');
 
     Route::post('/create-qris-transaction', [TransaksiController::class, 'createTransaction'])->name('create.qris.transaction');
-    Route::post('/transaksi/callback', [TransaksiController::class, 'handleCallback'])
-     ->name('transaksi.callback');
+    // Route::post('/transaksi/callback', [TransaksiController::class, 'handleCallback'])
+    //  ->name('transaksi.callback');
 });
 
 // // Owner Routes
