@@ -18,7 +18,7 @@ class TransaksiController extends Controller
     public function index(Request $request)
     {
         $search = $request->input('search');
-        $query = Item::with(['stokTotal', 'satuan']);
+        $query  = Item::with(['stokTotal', 'satuan']);
         
         if ($search) {
             $query->where('nama', 'like', '%'.$search.'%');
@@ -119,11 +119,11 @@ class TransaksiController extends Controller
                 DB::commit();
 
                 return response()->json([
-                    'success'        => true,
-                    'transaction_id' => $transaction->id,
-                    'snap_token'    => $qrisResponse['snap_token'],
-                    'redirect_url'  => $qrisResponse['redirect_url'],
-                    'message'      => 'Transaksi QRIS berhasil, silakan selesaikan pembayaran.',
+                    'success'           => true,
+                    'transaction_id'    => $transaction->id,
+                    'snap_token'        => $qrisResponse['snap_token'],
+                    'redirect_url'      => $qrisResponse['redirect_url'],
+                    'message'           => 'Transaksi QRIS berhasil, silakan selesaikan pembayaran.',
                 ]);
             }
 
@@ -131,8 +131,8 @@ class TransaksiController extends Controller
 
             return response()->json([
                 'success'        => true,
-                'transaction_id' => $transaction->id,
-                'message'       => 'Transaksi tunai berhasil',
+                'faktur'         => $transaction->faktur,
+                'message'        => 'Transaksi tunai berhasil',
             ]);
 
         } catch (\Exception $e) {
@@ -246,27 +246,81 @@ class TransaksiController extends Controller
     // Callback handler untuk Midtrans
     public function handleCallback(Request $request)
     {
-        $orderId = $request->order_id;
-        $statusCode = $request->status_code;
-        $transactionStatus = $request->transaction_status;
+        // Ambil payload dari request
+        $payload        = $request->getContent();
+        $notification   = json_decode($payload);
 
-        $transaction = Transaksi::find($orderId);
+        // Verifikasi signature untuk memastikan keamanan
+        $signatureKey = hash('sha512',
+            $notification->order_id .
+            $notification->status_code .
+            $notification->gross_amount .
+            config('midtrans.server_key')
+        );
+
+        if ($notification->signature_key !== $signatureKey) {
+            return;
+        }
+
+        // Ambil data status transaksi dan tipe pembayaran
+        $transactionStatus  = $notification->transaction_status;
+        $paymentType        = $notification->payment_type;
+        $orderId            = $notification->order_id;
+
+        // Cari transaksi berdasarkan invoice yang sama dengan order_id
+        $transaction = Transaksi::where('faktur', $orderId)->first();
+
         if (!$transaction) {
-            return response()->json(['status' => 'error', 'message' => 'Transaction not found'], 404);
+            return;
         }
 
-        if ($transaction->status !== 'pending') {
-            return response()->json(['status' => 'success', 'message' => 'Transaction already processed']);
+        // Tentukan status transaksi berdasarkan status dari Midtrans
+        switch ($transactionStatus) {
+            case 'capture':
+                $transaction->update([
+                    'status' => 'success',
+                    'metode_pembayaran' => 'qris',
+                ]);
+                break;
+
+            case 'settlement':
+                $transaction->update([
+                    'status' => 'success',
+                    'metode_pembayaran' => 'qris',
+                ]);
+                break;
+
+            case 'pending':
+                $transaction->update([
+                    'status' => 'pending',
+                    'metode_pembayaran' => 'qris',
+                ]);
+                break;
+
+            case 'deny':
+                $transaction->update([
+                    'status' => 'failed',
+                    'metode_pembayaran' => 'qris',
+                ]);
+                break;
+
+            case 'expire':
+                $transaction->update([
+                    'status' => 'expired',
+                    'metode_pembayaran' => 'qris',
+                ]);
+                break;
+
+            case 'cancel':
+                $transaction->update([
+                    'status' => 'failed',
+                    'metode_pembayaran' => 'qris',
+                ]);
+                break;
+
+            default:
+                return;
         }
 
-        if ($statusCode == 200 && $transactionStatus == 'settlement') {
-            $transaction->update(['status' => 'success']);
-            return response()->json(['status' => 'success', 'message' => 'Payment successful']);
-        } elseif (in_array($transactionStatus, ['deny', 'cancel', 'expire'])) {
-            $transaction->update(['status' => 'failed']);
-            return response()->json(['status' => 'failed', 'message' => 'Payment failed']);
-        }
-
-        return response()->json(['status' => 'pending', 'message' => 'Waiting for payment']);
     }
 }

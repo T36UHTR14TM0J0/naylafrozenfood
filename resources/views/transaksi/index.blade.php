@@ -395,8 +395,9 @@ function processPayment(paymentMethod) {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
+                // console.log(data);
                 showReceipt({
-                    transaction_id: data.transaction_id,
+                    transaction_id: data.faktur,
                     items: Array.from(document.querySelectorAll('[name="item_id[]"]')).map((item, index) => ({
                         name: item.closest('tr').querySelector('td').textContent.trim(),
                         quantity: document.querySelectorAll('[name="item_quantity[]"]')[index].value,
