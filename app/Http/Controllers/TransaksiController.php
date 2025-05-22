@@ -40,7 +40,7 @@ class TransaksiController extends Controller
             }
 
 
-            return redirect()->route('admin.transaksi.index');
+            return redirect()->route('transaksi.index');
         }
 
         $search = $request->input('search');
@@ -231,7 +231,7 @@ class TransaksiController extends Controller
             ],
             'enabled_payments' => ['gopay'],
             'callbacks' => [
-                'finish' => route('admin.transaksi.index')
+                'finish' => route('transaksi.index')
             ],
             'expiry' => [
                 'start_time' => now()->format('Y-m-d H:i:s O'),
