@@ -17,6 +17,32 @@ class TransaksiController extends Controller
 {
     public function index(Request $request)
     {
+
+        $orderId            = $request->input('order_id');
+        $statusCode         = $request->input('status_code');
+        $transactionStatus  = $request->input('transaction_status');
+
+
+        if ($orderId && $statusCode && $transactionStatus) {
+
+            $transaction = Transaksi::where('faktur', $orderId)->first();
+
+            if ($transaction) {
+
+                if ($statusCode == 200 && $transactionStatus == 'settlement') {
+                    $transaction->status = 'success';
+                } elseif ($transactionStatus == 'pending') {
+                    $transaction->status = 'pending';
+                } elseif ($transactionStatus == 'failed') {
+                    $transaction->status = 'failed';
+                }
+                $transaction->save();
+            }
+
+
+            return redirect()->route('admin.transaksi.index');
+        }
+
         $search = $request->input('search');
         $query  = Item::with(['stokTotal', 'satuan']);
         
@@ -205,7 +231,7 @@ class TransaksiController extends Controller
             ],
             'enabled_payments' => ['gopay'],
             'callbacks' => [
-                'finish' => route('transaksi.callback')
+                'finish' => route('admin.transaksi.index')
             ],
             'expiry' => [
                 'start_time' => now()->format('Y-m-d H:i:s O'),
