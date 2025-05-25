@@ -229,7 +229,7 @@ class TransaksiController extends Controller
                 'first_name'    => 'Customer',
                 'email'         => 'teguhtriatmojo23@gmail.com',
             ],
-            'enabled_payments' => ['gopay'],
+            // 'enabled_payments' => ['gopay'],
             'callbacks' => [
                 'finish' => route('transaksi.index')
             ],

@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('total_bayar')->nullable();
             $table->string('kembalian')->nullable();
             $table->string('diskon')->default('0');
-            $table->enum('metode_pembayaran', ['cash', 'qris'])->default('cash');
+            $table->enum('metode_pembayaran', ['cash', 'online'])->default('cash');
             $table->string('url_tautan_pembayaran')->nullable();
             $table->timestamp('tanggal_transaksi')->nullable();
             $table->enum('status', array('pending', 'success', 'expired', 'failed'))->default('pending');
