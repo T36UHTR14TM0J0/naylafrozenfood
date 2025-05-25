@@ -42,42 +42,42 @@ class NotifikasiController extends Controller
             case 'capture':
                 $transaction->update([
                     'status' => 'success',
-                    'metode_pembayaran' => 'qris',
+                    'metode_pembayaran' => 'online',
                 ]);
                 break;
 
             case 'settlement':
                 $transaction->update([
                     'status' => 'success',
-                    'metode_pembayaran' => 'qris',
+                    'metode_pembayaran' => 'online',
                 ]);
                 break;
 
             case 'pending':
                 $transaction->update([
                     'status' => 'pending',
-                    'metode_pembayaran' => 'qris',
+                    'metode_pembayaran' => 'online',
                 ]);
                 break;
 
             case 'deny':
                 $transaction->update([
                     'status' => 'failed',
-                    'metode_pembayaran' => 'qris',
+                    'metode_pembayaran' => 'online',
                 ]);
                 break;
 
             case 'expire':
                 $transaction->update([
                     'status' => 'expired',
-                    'metode_pembayaran' => 'qris',
+                    'metode_pembayaran' => 'online',
                 ]);
                 break;
 
             case 'cancel':
                 $transaction->update([
                     'status' => 'failed',
-                    'metode_pembayaran' => 'qris',
+                    'metode_pembayaran' => 'online',
                 ]);
                 break;
 

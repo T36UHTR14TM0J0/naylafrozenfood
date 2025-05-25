@@ -69,8 +69,16 @@
                 </tbody>
             </table>
 
-            <!-- PAGINATION SECTION (tetap sama seperti sebelumnya) -->
-            <!-- ... -->
+            <!-- PAGINATION SECTION -->
+            <div class="d-flex justify-content-between align-items-center mt-3">
+                <div class="text-muted">
+                    Menampilkan {{ $items->firstItem() }} sampai {{ $items->lastItem() }} dari {{ $items->total() }} entri
+                </div>
+                <div>
+                    <!-- Pagination Links -->
+                    {{ $items->withQueryString()->links() }}
+                </div>
+            </div>
 
             <!-- ==================== TRANSACTION FORM ==================== -->
             <form id="form-transaksi" action="{{ route('transaksi.store') }}" method="POST">
@@ -124,8 +132,8 @@
                     <button type="button" class="btn btn-primary" id="btn-cash" data-method="cash">
                         <i class="bi bi-cash-stack"></i> Pembayaran Tunai
                     </button>
-                    <button type="button" class="btn btn-info" id="btn-qris" data-method="qris">
-                        <i class="bi bi-qrcode"></i> Pembayaran QRIS
+                    <button type="button" class="btn btn-info" id="btn-online" data-method="online">
+                        <i class="bi bi-qrcode"></i> Pembayaran Online
                     </button>
                 </div>
             </form>
@@ -154,13 +162,13 @@
     </div>
 </div>
 
+
 @endsection
 
 @push('scripts')
 <script>
     // ==================== UTILITY FUNCTIONS ====================
     function formatRupiah(angka) {
-        if (!angka) return '0';
         return angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }
 
@@ -295,8 +303,8 @@
         processPayment('cash');
     });
 
-    document.getElementById('btn-qris').addEventListener('click', function() {
-        processPayment('qris');
+    document.getElementById('btn-online').addEventListener('click', function() {
+        processPayment('online');
     });
 
     // ==================== BUSINESS LOGIC FUNCTIONS ====================
@@ -357,8 +365,8 @@ function processPayment(paymentMethod) {
     const csrfTokenMeta = document.querySelector('meta[name="csrf-token"]');
     const csrfToken = csrfTokenMeta ? csrfTokenMeta.content : '';
     
-    // Handle QRIS payment method
-    if (paymentMethod === 'qris') {
+    // Handle Online payment method
+    if (paymentMethod === 'online') {
         fetch("{{ route('transaksi.store') }}", {
             method: 'POST',
             body: formData,
@@ -370,7 +378,7 @@ function processPayment(paymentMethod) {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                showQRIS(data.snap_token); // Show the QRIS payment
+                showOnline(data.snap_token); // Show the Online payment
             } else {
                 throw new Error(data.message || 'Transaksi gagal');
             }
@@ -433,19 +441,19 @@ function processPayment(paymentMethod) {
 }
 
 
-    function showQRIS(snapToken) {
+    function showOnline(snapToken) {
         console.log(snapToken);
         // Call Midtrans Snap API to show the QR code
         snap.pay(snapToken, {
             onSuccess: function(result) {
-                Swal.fire('Pembayaran Berhasil', 'Pembayaran menggunakan QRIS berhasil', 'success');
+                Swal.fire('Pembayaran Berhasil', 'Pembayaran menggunakan Online berhasil', 'success');
                 // Optionally, you can show receipt here
             },
             onPending: function(result) {
                 Swal.fire('Pembayaran Menunggu', 'Pembayaran Anda sedang diproses', 'info');
             },
             onError: function(result) {
-                Swal.fire('Pembayaran Gagal', 'Terjadi kesalahan saat memproses pembayaran QRIS', 'error');
+                Swal.fire('Pembayaran Gagal', 'Terjadi kesalahan saat memproses pembayaran Online', 'error');
             }
         });
     }
@@ -519,7 +527,7 @@ function processPayment(paymentMethod) {
                     </tr>
                 </table>
                 <hr>
-                <p>Metode: ${transactionData.payment_method === 'cash' ? 'Tunai' : 'QRIS'}</p>
+                <p>Metode: ${transactionData.payment_method === 'cash' ? 'Tunai' : 'Online'}</p>
                 <p>Kasir: ${transactionData.cashier}</p>
                 <hr>
                 <p>Terima kasih telah berbelanja</p>

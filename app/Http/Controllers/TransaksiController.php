@@ -67,15 +67,15 @@ class TransaksiController extends Controller
             'total_amount'      => 'required|numeric|min:0',
             'payment'           => 'required|numeric|min:0',
             'kembalian'         => 'nullable|numeric|min:0',
-            'metode_pembayaran' => 'required|string|in:cash,qris',
+            'metode_pembayaran' => 'required|string|in:cash,online',
         ]);
 
         try {
             DB::beginTransaction();
-            $isQris         = $validated['metode_pembayaran'] === 'qris';
+            $isOnline         = $validated['metode_pembayaran'] === 'online';
 
             // Validasi pembayaran tunai
-            if (!$isQris && $validated['payment'] < $validated['total_amount']) {
+            if (!$isOnline && $validated['payment'] < $validated['total_amount']) {
                 throw new \Exception("Pembayaran tunai tidak mencukupi total transaksi");
             }
 
@@ -90,12 +90,12 @@ class TransaksiController extends Controller
                 'user_id'           => auth()->id(),
                 'total_transaksi'   => $validated['total_amount'],
                 'total_bayar'       => $validated['payment'],
-                 'faktur'           => 'INV-' . now()->format('YmdHis') . '-' . strtoupper(Str::random(5)),
+                'faktur'           => 'INV-' . now()->format('YmdHis') . '-' . strtoupper(Str::random(5)),
                 'kembalian'         => $validated['kembalian'] ?? 0,
                 'diskon'            => $discountAmount,
                 'metode_pembayaran' => $validated['metode_pembayaran'],
                 'tanggal_transaksi' => now(),
-                'status'            => $isQris ? 'pending' : 'success',
+                'status'            => $isOnline ? 'pending' : 'success',
             ]);
 
             // Simpan detail transaksi
@@ -124,22 +124,23 @@ class TransaksiController extends Controller
                 StokItem::create([
                     'item_id'       => $itemId,
                     'jumlah_stok'   => $validated['item_quantity'][$index],
-                    'status'        => 'keluar'
+                    'status'        => 'keluar',
+                    'harga'         => $subtotal
                 ]);
             }
 
-            // Proses pembayaran QRIS jika dipilih
-            if ($isQris) {
-                $qrisResponse = $this->createQrisTransaction($transaction, $validated);
+            // Proses pembayaran Online jika dipilih
+            if ($isOnline) {
+                $onlineResponse = $this->createOnlineTransaction($transaction, $validated);
                 
-                if (!$qrisResponse['success']) {
-                    throw new \Exception("QRIS payment failed: " . $qrisResponse['message']);
+                if (!$onlineResponse['success']) {
+                    throw new \Exception("Online payment failed: " . $onlineResponse['message']);
                 }
 
-                // Update transaksi dengan data QRIS
+                // Update transaksi dengan data Online
                 $transaction->update([
-                    // 'snap_token' => $qrisResponse['snap_token'],
-                    'url_tautan_pembayaran' => $qrisResponse['redirect_url'] ?? null
+                    // 'snap_token' => $onlineResponse['snap_token'],
+                    'url_tautan_pembayaran' => $onlineResponse['redirect_url'] ?? null
                 ]);
 
                 DB::commit();
@@ -147,9 +148,9 @@ class TransaksiController extends Controller
                 return response()->json([
                     'success'           => true,
                     'transaction_id'    => $transaction->id,
-                    'snap_token'        => $qrisResponse['snap_token'],
-                    'redirect_url'      => $qrisResponse['redirect_url'],
-                    'message'           => 'Transaksi QRIS berhasil, silakan selesaikan pembayaran.',
+                    'snap_token'        => $onlineResponse['snap_token'],
+                    'redirect_url'      => $onlineResponse['redirect_url'],
+                    'message'           => 'Transaksi Online berhasil, silakan selesaikan pembayaran.',
                 ]);
             }
 
@@ -175,7 +176,7 @@ class TransaksiController extends Controller
         }
     }
 
-    private function createQrisTransaction($transaction, $validated)
+    private function createOnlineTransaction($transaction, $validated)
     {
 
         // dd($transaction);
@@ -244,7 +245,7 @@ class TransaksiController extends Controller
             $snapToken = Snap::getSnapToken($transaction_data);
             
             if (empty($snapToken)) {
-                throw new \Exception("Gagal membuat transaksi QRIS");
+                throw new \Exception("Gagal membuat transaksi Online");
             }
 
             return [
@@ -262,7 +263,7 @@ class TransaksiController extends Controller
             
             return [
                 'success' => false,
-                'message' => 'Error QRIS: '.$e->getMessage()
+                'message' => 'Error Online: '.$e->getMessage()
             ];
         }
     }
@@ -305,42 +306,42 @@ class TransaksiController extends Controller
     //         case 'capture':
     //             $transaction->update([
     //                 'status' => 'success',
-    //                 'metode_pembayaran' => 'qris',
+    //                 'metode_pembayaran' => 'online',
     //             ]);
     //             break;
 
     //         case 'settlement':
     //             $transaction->update([
     //                 'status' => 'success',
-    //                 'metode_pembayaran' => 'qris',
+    //                 'metode_pembayaran' => 'online',
     //             ]);
     //             break;
 
     //         case 'pending':
     //             $transaction->update([
     //                 'status' => 'pending',
-    //                 'metode_pembayaran' => 'qris',
+    //                 'metode_pembayaran' => 'online',
     //             ]);
     //             break;
 
     //         case 'deny':
     //             $transaction->update([
     //                 'status' => 'failed',
-    //                 'metode_pembayaran' => 'qris',
+    //                 'metode_pembayaran' => 'online',
     //             ]);
     //             break;
 
     //         case 'expire':
     //             $transaction->update([
     //                 'status' => 'expired',
-    //                 'metode_pembayaran' => 'qris',
+    //                 'metode_pembayaran' => 'online',
     //             ]);
     //             break;
 
     //         case 'cancel':
     //             $transaction->update([
     //                 'status' => 'failed',
-    //                 'metode_pembayaran' => 'qris',
+    //                 'metode_pembayaran' => 'online',
     //             ]);
     //             break;
 
