@@ -28,14 +28,17 @@ class AuthController extends Controller
      */
     public function login(Request $request)
     {
-        $credentials = $request->validate([
-            'email'     => 'required|email',
-            'password'  => 'required',
-        ], [
-            'email.required'    => 'Email harus diisi',
-            'email.email'       => 'Format email tidak valid',
-            'password.required' => 'Password harus diisi',
-        ]);
+        $credentials = $request->validate(
+            [
+                'email'             => 'required|email',
+                'password'          => 'required',
+            ], 
+            [
+                'email.required'    => 'Email harus diisi',
+                'email.email'       => 'Format email tidak valid',
+                'password.required' => 'Password harus diisi',
+            ]
+        );
 
         if (Auth::attempt($credentials, $request->remember)) {
             $request->session()->regenerate();
@@ -62,14 +65,10 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $data = $request->validate([
-            'name'          => 'required|max:255',
-            'email'         => 'required|email|unique:users',
-            'password'      => ['required', 'confirmed', Rules\Password::min(8)
-                                ->letters()
-                                ->mixedCase()
-                                ->numbers()
-                                ->symbols()],
-            'role'          => 'required|in:admin,owner',
+            'name'                  => 'required|max:255',
+            'email'                 => 'required|email|unique:users',
+            'password'              => ['required', 'confirmed', Rules\Password::min(8)->letters()->mixedCase()->numbers()->symbols()],
+            'role'                  => 'required|in:admin,owner',
         ], [
             'name.required'         => 'Nama lengkap harus diisi',
             'email.required'        => 'Email harus diisi',
