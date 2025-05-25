@@ -87,7 +87,7 @@
 
         <!-- Menu Laporan Transaksi -->
         <li class="pc-item">
-          <a href="#" class="pc-link">
+          <a href="{{ route('report.index') }}" class="pc-link">
             <span class="pc-micon"><i class="ti ti-chart-bar"></i></span>
             <span class="pc-mtext">Laporan Transaksi</span>
           </a>

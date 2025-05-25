@@ -7,6 +7,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\ItemStockController;
 use App\Http\Controllers\KategoriController;
+use App\Http\Controllers\LapTransController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SatuanController;
 use App\Http\Controllers\TransaksiController;
@@ -41,6 +42,11 @@ Route::middleware(['auth'])->group(function () {
     });
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+     Route::prefix('report')->name('report.')->group(function () {
+        Route::get('/', [LapTransController::class, 'index'])->name('index');
+        Route::get('/detail', [LapTransController::class, 'detail'])->name('detail');
+    });
 });
 // Admin Routes
 Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
