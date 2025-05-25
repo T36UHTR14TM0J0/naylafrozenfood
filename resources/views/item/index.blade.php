@@ -59,11 +59,10 @@
                             <th width="5%" class="text-white text-center">No</th>
                             <th width="10%" class="text-white text-center">Gambar</th>
                             <th class="text-white text-center min-width-150">Nama Item</th>
-                            <th class="text-white text-center min-width-120">Harga Beli</th>
-                            <th class="text-white text-center min-width-120">Harga Jual</th>
                             <th class="text-white text-center min-width-120">Kategori</th>
                             <th class="text-white text-center min-width-100">Stok</th>
                             <th class="text-white text-center min-width-100">Satuan</th>
+                            <th class="text-white text-center min-width-120">Harga</th>
                             <th class="text-white text-center min-width-150">Tanggal Dibuat</th>
                             <th width="5%" class="text-white text-center min-width-100">Aksi</th>
                         </tr>
@@ -84,11 +83,10 @@
                                 @endif
                             </td>
                             <td>{{ $item->nama }}</td>
-                            <td class="text-nowrap">Rp {{ number_format($item->harga_beli, 0, ',', '.') }}</td>
-                            <td class="text-nowrap">Rp {{ number_format($item->harga_jual, 0, ',', '.') }}</td>
                             <td>{{ $item->kategori->nama ?? '-' }}</td>
                             <td class="text-center">{{ $item->stokTotal->total_stok ?? '-' }}</td>
                             <td>{{ $item->satuan->nama ?? '-' }}</td>
+                            <td class="text-nowrap">Rp {{ number_format($item->harga_jual, 0, ',', '.') }}</td>
                             <td class="text-nowrap">{{ $item->created_at->locale('id')->translatedFormat('d F Y') }}</td>
                             <td class="text-center">
                                 <div class="d-flex justify-content-center gap-1">

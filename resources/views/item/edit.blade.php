@@ -23,7 +23,7 @@
                 @enderror
             </div>
 
-            <div class="col-md-6 form-group">
+            {{-- <div class="col-md-6 form-group">
                 <label for="harga_beli" class="form-label">Harga Beli <span class="text-danger">*</span></label>
                 <div class="input-group">
                     <input type="text" id="harga_beli_display" 
@@ -42,11 +42,7 @@
                         {{ $message }}
                     </div>
                 @enderror
-            </div>
-        </div>
-
-        <!-- Kategori dan Satuan -->
-        <div class="row mb-3">
+            </div> --}}
             <div class="col-md-6 form-group">
                 <label for="harga_jual" class="form-label">Harga Jual <span class="text-danger">*</span></label>
                 <div class="input-group">
@@ -67,6 +63,11 @@
                     </div>
                 @enderror
             </div>
+        </div>
+
+        <!-- Kategori dan Satuan -->
+        <div class="row mb-3">
+            
             <div class="col-md-6 form-group">
                 <label for="kategori_id" class="form-label">Kategori <span class="text-danger">*</span></label>
                 <select id="kategori_id" name="kategori_id"
@@ -85,10 +86,6 @@
                     </div>
                 @enderror
             </div>
-        </div>
-
-        <!-- Satuan dan Gambar -->
-        <div class="row mb-3">
             <div class="col-md-6 form-group">
                 <label for="satuan_id" class="form-label">Satuan <span class="text-danger">*</span></label>
                 <select id="satuan_id" name="satuan_id"
@@ -107,6 +104,10 @@
                     </div>
                 @enderror
             </div>
+        </div>
+
+        <!-- Satuan dan Gambar -->
+        <div class="row mb-3">
             <div class="col-md-6">
                 <label for="gambar" class="form-label">Gambar Item</label>
 

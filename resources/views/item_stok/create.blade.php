@@ -1,7 +1,8 @@
-@extends('layout.app')
-@section('title', 'Tambah Stok Item')
+@extends('layout.app') 
+@section('title', 'Tambah Stok Item') 
 
 @section('content')
+
 <style>
     /* Menyesuaikan Select2 dengan Bootstrap 5 */
     .select2-container--default .select2-selection--single {
@@ -40,20 +41,17 @@
     .select2-container--default .select2-results__option {
         font-size: 1rem;
     }
-
 </style>
+
 <div class="container">
     <form method="POST" action="{{ route('stok.store') }}">
         @csrf
 
-        <!-- Nama Item -->
+        <!-- Form input untuk memilih item -->
         <div class="row mb-3">
-            
             <div class="col-md-4 form-group">
                 <label for="item_id" class="form-label">Item <span class="text-danger">*</span></label>
-                <select id="item_id" name="item_id"
-                        class="select2 form-select  @error('item_id') is-invalid @enderror"
-                        >
+                <select id="item_id" name="item_id" class="select2 form-select @error('item_id') is-invalid @enderror">
                     <option value="">Pilih item</option>
                     @foreach($items as $item)
                         <option value="{{ $item->id }}" {{ old('item_id') == $item->id ? 'selected' : '' }}>
@@ -67,11 +65,11 @@
                     </div>
                 @enderror
             </div>
+
+            <!-- Form input untuk memilih supplier -->
             <div class="col-md-4 form-group">
                 <label for="supplier_id" class="form-label">Supplier <span class="text-danger">*</span></label>
-                <select id="supplier_id" name="supplier_id"
-                        class="select2 form-select @error('supplier_id') is-invalid @enderror"
-                        >
+                <select id="supplier_id" name="supplier_id" class="select2 form-select @error('supplier_id') is-invalid @enderror">
                     <option value="">Pilih supplier</option>
                     @foreach($suppliers as $supplier)
                         <option value="{{ $supplier->id }}" {{ old('supplier_id') == $supplier->id ? 'selected' : '' }}>
@@ -86,13 +84,11 @@
                 @enderror
             </div>
 
+            <!-- Form input untuk jumlah stok -->
             <div class="col-md-4 form-group">
                 <label for="jumlah_stok" class="form-label">Jumlah Stok <span class="text-danger">*</span></label>
-                <input type="number" id="jumlah_stok" name="jumlah_stok"
-                        class="form-control @error('jumlah_stok') is-invalid @enderror"
-                        placeholder="Masukkan jumlah stok item"
-                        value="{{ old('jumlah_stok') }}"
-                        >
+                <input type="number" id="jumlah_stok" name="jumlah_stok" class="form-control @error('jumlah_stok') is-invalid @enderror"
+                       placeholder="Masukkan jumlah stok item" value="{{ old('jumlah_stok') }}">
                 @error('jumlah_stok')
                     <div class="invalid-feedback">
                         {{ $message }}
@@ -100,17 +96,59 @@
                 @enderror
             </div>
 
+            <!-- Form input untuk harga -->
+            <div class="col-md-4 form-group">
+                <label for="harga" class="form-label">Harga <span class="text-danger">*</span></label>
+                <input type="text" id="harga_display" name="harga_display" class="form-control @error('harga') is-invalid @enderror"
+                       placeholder="Masukkan harga" value="{{ old('harga') ? 'Rp ' . number_format(old('harga'), 0, ',', '.') : '' }}"
+                       onkeyup="formatRupiah(this, 'harga_hidden')">
+                <input type="hidden" id="harga_hidden" name="harga" value="{{ old('harga') }}">
+                @error('harga')
+                    <div class="invalid-feedback">
+                        {{ $message }}
+                    </div>
+                @enderror
+            </div>
         </div>
 
-
+        <!-- Tombol Kembali dan Simpan -->
         <div class="mt-4">
-            <a href="{{ route('stok.index') }}" class="btn btn-secondary">
-                Kembali
-            </a>
-            <button type="submit" class="btn btn-primary">
-                Simpan
-            </button>
+            <a href="{{ route('stok.index') }}" class="btn btn-secondary">Kembali</a>
+            <button type="submit" class="btn btn-primary">Simpan</button>
         </div>
     </form>
 </div>
+
 @endsection
+
+@push('scripts')
+<script>
+    // Fungsi untuk memformat input menjadi Rupiah
+    function formatRupiah(element, targetId) {
+        let value = element.value.replace(/\D/g, ''); // Menghapus semua karakter non-numerik
+        
+        let formattedValue = '';
+        if (value.length > 0) {
+            formattedValue = new Intl.NumberFormat('id-ID').format(value); // Format dengan ID
+        }
+        
+        element.value = formattedValue; // Update nilai display
+        document.getElementById(targetId).value = value; // Update nilai asli pada hidden input
+    }
+
+    // Menangani form submit untuk memastikan nilai harga yang benar
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('form');
+        if (form) {
+            form.addEventListener('submit', function() {
+                const hargaBeliDisplay = document.getElementById('harga_display');
+                if (hargaBeliDisplay) {
+                    const value = hargaBeliDisplay.value.replace(/\D/g, ''); // Ambil nilai numerik
+                    document.getElementById('harga_hidden').value = value; // Update hidden input
+                }
+            });
+        }
+    });
+</script>
+@endpush
+
