@@ -448,22 +448,31 @@ function processPayment(paymentMethod) {
         // Call Midtrans Snap API to show the QR code
         snap.pay(snapToken, {
             onSuccess: function(result) {
-                Swal.fire('Pembayaran Berhasil', 'Pembayaran menggunakan Online berhasil', 'success');
-                // Optionally, you can show receipt here
-                showReceipt({
-                    transaction_id: result.order_id,
-                    items: Array.from(document.querySelectorAll('[name="item_id[]"]')).map((item, index) => ({
-                        name: item.closest('tr').querySelector('td').textContent.trim(),
-                        quantity: document.querySelectorAll('[name="item_quantity[]"]')[index].value,
-                        subtotal: parseFloat(document.querySelectorAll('[name="item_total[]"]')[index].value)
-                    })),
-                    subtotal: Array.from(document.querySelectorAll('[name="item_total[]"]')).reduce((sum, input) => sum + parseFloat(input.value), 0),
-                    discount: parseFloat(document.getElementById('discount').value) || 0,
-                    total: totalTransaksi,
-                    payment: totalBayar,
-                    change: parseFloat(document.getElementById('change_hidden').value),
-                    payment_method: 'Online',
-                    cashier: '{{ auth()->user()->name }}'
+                // Tampilkan notifikasi pembayaran berhasil
+                Swal.fire({
+                    title: 'Pembayaran Berhasil',
+                    text: 'Pembayaran menggunakan Online berhasil',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                }).then((result) => {
+                    // Setelah notifikasi di-OK, tampilkan struk
+                    if (result.isConfirmed) {
+                        showReceipt({
+                            transaction_id: result.order_id,
+                            items: Array.from(document.querySelectorAll('[name="item_id[]"]')).map((item, index) => ({
+                                name: item.closest('tr').querySelector('td').textContent.trim(),
+                                quantity: document.querySelectorAll('[name="item_quantity[]"]')[index].value,
+                                subtotal: parseFloat(document.querySelectorAll('[name="item_total[]"]')[index].value)
+                            })),
+                            subtotal: Array.from(document.querySelectorAll('[name="item_total[]"]')).reduce((sum, input) => sum + parseFloat(input.value), 0),
+                            discount: parseFloat(document.getElementById('discount').value) || 0,
+                            total: totalTransaksi,
+                            payment: totalBayar,
+                            change: parseFloat(document.getElementById('change_hidden').value),
+                            payment_method: 'Online',
+                            cashier: '{{ auth()->user()->name }}'
+                        });
+                    }
                 });
             },
             onPending: function(result) {
