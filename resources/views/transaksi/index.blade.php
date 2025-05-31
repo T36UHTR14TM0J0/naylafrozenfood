@@ -454,9 +454,9 @@ function processPayment(paymentMethod) {
                     text: 'Pembayaran menggunakan Online berhasil',
                     icon: 'success',
                     confirmButtonText: 'OK'
-                }).then((result) => {
+                }).then((resultSwal) => {
                     // Setelah notifikasi di-OK, tampilkan struk
-                    if (result.isConfirmed) {
+                    if (resultSwal.isConfirmed) {
                         showReceipt({
                             transaction_id: result.order_id,
                             items: Array.from(document.querySelectorAll('[name="item_id[]"]')).map((item, index) => ({
