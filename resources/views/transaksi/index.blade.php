@@ -443,12 +443,28 @@ function processPayment(paymentMethod) {
 
     function showOnline(snapToken) {
         console.log(snapToken);
+        const totalBayar = parseFloat(document.getElementById('payment_hidden').value) || 0;
+        const totalTransaksi = parseFloat(document.getElementById('total_amount_hidden').value) || 0;
         // Call Midtrans Snap API to show the QR code
         snap.pay(snapToken, {
             onSuccess: function(result) {
                 Swal.fire('Pembayaran Berhasil', 'Pembayaran menggunakan Online berhasil', 'success');
                 // Optionally, you can show receipt here
-                console.log(result);
+                showReceipt({
+                    transaction_id: result.order_id,
+                    items: Array.from(document.querySelectorAll('[name="item_id[]"]')).map((item, index) => ({
+                        name: item.closest('tr').querySelector('td').textContent.trim(),
+                        quantity: document.querySelectorAll('[name="item_quantity[]"]')[index].value,
+                        subtotal: parseFloat(document.querySelectorAll('[name="item_total[]"]')[index].value)
+                    })),
+                    subtotal: Array.from(document.querySelectorAll('[name="item_total[]"]')).reduce((sum, input) => sum + parseFloat(input.value), 0),
+                    discount: parseFloat(document.getElementById('discount').value) || 0,
+                    total: totalTransaksi,
+                    payment: totalBayar,
+                    change: parseFloat(document.getElementById('change_hidden').value),
+                    payment_method: 'Online',
+                    cashier: '{{ auth()->user()->name }}'
+                });
             },
             onPending: function(result) {
                 Swal.fire('Pembayaran Menunggu', 'Pembayaran Anda sedang diproses', 'info');
