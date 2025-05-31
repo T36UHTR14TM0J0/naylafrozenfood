@@ -448,6 +448,7 @@ function processPayment(paymentMethod) {
             onSuccess: function(result) {
                 Swal.fire('Pembayaran Berhasil', 'Pembayaran menggunakan Online berhasil', 'success');
                 // Optionally, you can show receipt here
+                console.log(result);
             },
             onPending: function(result) {
                 Swal.fire('Pembayaran Menunggu', 'Pembayaran Anda sedang diproses', 'info');
