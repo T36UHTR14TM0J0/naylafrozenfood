@@ -22,14 +22,14 @@
         </li>
 
         <!-- Menu Transaksi hanya untuk Admin -->
-        @if (auth()->user()->isAdmin())
+        {{-- @if (auth()->user()->isAdmin()) --}}
         <li class="pc-item">
           <a href="{{ route('transaksi.index') }}" class="pc-link">
             <span class="pc-micon"><i class="ti ti-receipt"></i></span>
             <span class="pc-mtext">Transaksi</span>
           </a>
         </li>
-        @endif
+        {{-- @endif --}}
         
         <!-- Caption Master Data -->
         <li class="pc-item pc-caption">
@@ -47,7 +47,7 @@
         @endif
 
         <!-- Menu Kategori Item hanya untuk Admin -->
-        @if (auth()->user()->isAdmin())
+        {{-- @if (auth()->user()->isAdmin()) --}}
         <li class="pc-item">
           <a href="{{ route('kategori.index') }}" class="pc-link">
             <span class="pc-micon"><i class="ti ti-tag"></i></span>
@@ -78,7 +78,7 @@
             <span class="pc-mtext">Kelola Stok</span>
           </a>
         </li>
-        @endif
+        {{-- @endif --}}
 
         <!-- Caption untuk laporan -->
         <li class="pc-item pc-caption">
@@ -90,6 +90,12 @@
           <a href="{{ route('report.index') }}" class="pc-link">
             <span class="pc-micon"><i class="ti ti-chart-bar"></i></span>
             <span class="pc-mtext">Laporan Transaksi</span>
+          </a>
+        </li>
+        <li class="pc-item">
+          <a href="#" class="pc-link">
+            <span class="pc-micon"><i class="fas fa-money-bill-wave"></i></span>
+            <span class="pc-mtext">Laporan Keuangan</span>
           </a>
         </li>
 

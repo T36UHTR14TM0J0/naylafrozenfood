@@ -43,13 +43,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-     Route::prefix('report')->name('report.')->group(function () {
-        Route::get('/', [LapTransController::class, 'index'])->name('index');
-        Route::get('/detail', [LapTransController::class, 'detail'])->name('detail');
-    });
-});
-// Admin Routes
-Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
+
     Route::resource('kategori', KategoriController::class);
     Route::resource('satuan', SatuanController::class);
     Route::resource('item', ItemController::class);
@@ -58,6 +52,16 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::post('/transaksi/store', [TransaksiController::class, 'store'])->name('transaksi.store');
 
     Route::post('/create-qris-transaction', [TransaksiController::class, 'createTransaction'])->name('create.qris.transaction');
+
+    Route::prefix('report')->name('report.')->group(function () {
+        Route::get('/', [LapTransController::class, 'index'])->name('index');
+        Route::get('/detail/{id}/detail', [LapTransController::class, 'detail'])->name('detail');
+    });
+});
+
+// Admin Routes
+Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
+    
     // Route::post('/transaksi/callback', [TransaksiController::class, 'handleCallback'])
     //  ->name('transaksi.callback');
 });

@@ -5,96 +5,102 @@
 @section('content')
 <div class="container mt-4">
     <div class="row justify-content-center">
-        <div class="col-lg-12 shadow shadow-sm p-2">
+        <div class="col-lg-12 shadow shadow-sm p-3 bg-white rounded">
             <!-- ==================== FILTER FORM ==================== -->
             <form method="GET" action="{{ route('report.index') }}" class="mb-4">
                 @csrf
-                <div class="row">
-                    <div class="col-md-3 mb-3">
+                <div class="row g-3">
+                    <div class="col-md-3">
                         <label for="tanggal_awal" class="form-label">Tanggal Awal</label>
                         <input type="date" id="tanggal_awal" name="tanggal_awal" class="form-control" value="{{ old('tanggal_awal', $tanggal_awal) }}" required>
                     </div>
-                    <div class="col-md-3 mb-3">
+                    <div class="col-md-3">
                         <label for="tanggal_akhir" class="form-label">Tanggal Akhir</label>
                         <input type="date" id="tanggal_akhir" name="tanggal_akhir" class="form-control" value="{{ old('tanggal_akhir', $tanggal_akhir) }}" required>
                     </div>
-                    <div class="col-md-3 mb-3">
+                    <div class="col-md-3">
                         <label for="metode_pembayaran" class="form-label">Metode Pembayaran</label>
-                        <select name="metode_pembayaran" class="form-control">
-                            <option value="">Pilih</option>
+                        <select name="metode_pembayaran" class="form-select">
+                            <option value="">Semua Metode</option>
                             <option value="cash" {{ request('metode_pembayaran') == 'cash' ? 'selected' : '' }}>Cash</option>
                             <option value="online" {{ request('metode_pembayaran') == 'online' ? 'selected' : '' }}>Online</option>
                         </select>
                     </div>
-                    <div class="col-md-3 mb-3 d-flex align-items-end">
-                        <button type="submit" class="btn btn-primary">Filter</button>
+                    <div class="col-md-3 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-filter me-2"></i>Filter
+                        </button>
                     </div>
                 </div>
             </form>
 
             <!-- ==================== TRANSACTION TABLE ==================== -->
-            <div class="card shadow">
-                <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0 text-white"><i class="bi bi-list-ul"></i> Daftar Transaksi</h5>
-                    <span>Total Transaksi: {{ $totalTransactions }}</span>
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center py-3">
+                    <h5 class="mb-0 text-white"><i class="fas fa-list-alt me-2"></i> Daftar Transaksi</h5>
+                    <span class="badge bg-light text-dark fs-6">Total: {{ $totalTransactions }}</span>
                 </div>
 
                 <div class="card-body p-0">
-                    <div class="table-responsive p-4" style="max-height: 600px; overflow-y: auto;">
+                    <div class="table-responsive">
                         @if($transactions->isNotEmpty())
-                            <table class="table align-middle table-hover table-bordered">
-                                <thead class="bg-light text-white">
+                            <table class="table table-hover mb-0">
+                                <thead class="bg-light">
                                     <tr>
-                                        <th class="text-center">No</th>
-                                        <th class="text-center">No Faktur</th>
-                                        <th class="text-center">Tanggal Transaksi</th>
-                                        <th class="text-center">Metode Pembayaran</th>
-                                        <th class="text-center">Total Transaksi</th>
+                                        <th width="5%" class="text-center">No</th>
+                                        <th>No Faktur</th>
+                                        <th class="text-center">Tanggal</th>
+                                        <th class="text-center">Metode</th>
+                                        <th class="text-center">Diskon</th>
+                                        <th class="text-end">Total Transaksi</th>
                                         <th class="text-center">Status</th>
-                                        <th class="text-center">Aksi</th>
+                                        <th width="6%" class="text-center">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <?php $no = 1;?>
                                     @foreach($transactions as $transaction)
-                                    <tr>
-                                        <td class="text-center"><?= $no++;?></td>
-                                        <td>{{ $transaction->faktur }}</td>
-                                        <td  class="text-center">{{ \Carbon\Carbon::parse($transaction->tanggal_transaksi)->locale('id')->translatedFormat('d F Y') }}</td>
-                                        <td  class="text-center">
+                                    <tr class="align-middle">
+                                        <td class="text-center">{{ $loop->iteration }}</td>
+                                        <td class="fw-semibold">{{ $transaction->faktur }}</td>
+                                        <td class="text-center">{{ \Carbon\Carbon::parse($transaction->tanggal_transaksi)->translatedFormat('d M Y') }}</td>
+                                        <td class="text-center">
                                             <span class="badge bg-{{ $transaction->metode_pembayaran === 'cash' ? 'success' : 'primary' }}">
                                                 {{ ucfirst($transaction->metode_pembayaran) }}
                                             </span>
                                         </td>
+                                        <td class="text-center">Rp {{ number_format($transaction->diskon,0,',','.') }}</td>
                                         <td class="text-end">Rp {{ number_format($transaction->total_transaksi, 0, ',', '.') }}</td>
                                         <td class="text-center">
                                             <span class="badge bg-{{ $transaction->status === 'success' ? 'success' : ($transaction->status === 'pending' ? 'warning' : 'danger') }}">
                                                 {{ ucfirst($transaction->status) }}
                                             </span>
                                         </td>
-                                        <td>
-                                          <a href="{{ route('report.detail', $transaction->id) }}" class="btn btn-sm btn-primary" title="Detail">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
+                                        <td class="text-center">
+                                            <a href="{{ route('report.detail', $transaction->id) }}" class="btn btn-sm btn-primary px-2" title="Detail">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
                                         </td>
                                     </tr>
                                     @endforeach
                                 </tbody>
                             </table>
                         @else
-                            <p class="text-center py-4">Transaksi tidak ditemukan.</p>
+                            <div class="text-center py-5">
+                                <i class="fas fa-file-alt fa-3x text-muted mb-3"></i>
+                                <p class="text-muted fs-5">Tidak ada data transaksi</p>
+                            </div>
                         @endif
                     </div>
                 </div>
             </div>
 
             <!-- PAGINATION SECTION -->
-            <div class="d-flex justify-content-between align-items-center mt-3">
+            <div class="d-flex justify-content-between align-items-center mt-3 px-2">
                 <div class="text-muted">
-                    Menampilkan {{ $transactions->firstItem() }} sampai {{ $transactions->lastItem() }} dari {{ $transactions->total() }} entri
+                    Menampilkan <span class="fw-semibold">{{ $transactions->firstItem() }}</span> sampai <span class="fw-semibold">{{ $transactions->lastItem() }}</span> dari <span class="fw-semibold">{{ $transactions->total() }}</span> entri
                 </div>
                 <div>
-                    {{ $transactions->links() }}
+                    {{ $transactions->onEachSide(1)->links() }}
                 </div>
             </div>
         </div>

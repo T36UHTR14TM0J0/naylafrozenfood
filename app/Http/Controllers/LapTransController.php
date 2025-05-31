@@ -43,7 +43,35 @@ class LapTransController extends Controller
     }
 
 
-    public function detail(){
-        return "ok";
+    public function detail($id)
+    {
+        // Ambil data transaksi beserta relasi item transaksi
+        $transaksi = Transaksi::with(['TransaksiDetail.item','user'])
+            ->findOrFail($id);
+
+        // Format data untuk ditampilkan
+        $data = [
+            'header' => [
+                'faktur'            => $transaksi->faktur,
+                'tanggal'           => $transaksi->tanggal_transaksi,
+                'metode_pembayaran' => $transaksi->metode_pembayaran,
+                'diskon'            => $transaksi->diskon,
+                'total_transaksi'   => $transaksi->total_transaksi,
+                'total_bayar'       => $transaksi->total_bayar,
+                'kembalian'         => $transaksi->kembalian,
+                'status'            => $transaksi->status,
+                'kasir'             => $transaksi->user->name ?? 'Unknown'
+            ],
+            'items' => $transaksi->TransaksiDetail->map(function ($item) {
+                return [
+                    'nama'          => $item->item->nama ?? 'Produk tidak ditemukan',
+                    'harga'         => $item->harga_jual,
+                    'jumlah'        => $item->jumlah,
+                    'total_harga'   => $item->total_harga
+                ];
+            })
+        ];
+
+        return view('laporan.transaksi.detail', compact('data'));
     }
 }
