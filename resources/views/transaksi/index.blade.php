@@ -472,6 +472,12 @@ function processPayment(paymentMethod) {
                             payment_method: 'Online',
                             cashier: '{{ auth()->user()->name }}'
                         });
+
+                        document.getElementById('form-transaksi').reset();
+                        document.getElementById('item-list').innerHTML = '';
+                        document.getElementById('total_amount_display').value = '';
+                        document.getElementById('payment_display').value = '';
+                        document.getElementById('change_display').value = '';
                     }
                 });
             },
