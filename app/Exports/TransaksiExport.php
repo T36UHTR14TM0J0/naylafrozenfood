@@ -22,8 +22,8 @@ class TransaksiExport implements FromCollection, WithHeadings, WithMapping, With
     public function __construct($transaksi, $tanggal_awal, $tanggal_akhir, $metode_pembayaran)
     {
         $this->transaksi = $transaksi;
-        $this->tanggal_awal = \Carbon\Carbon::parse($tanggal_awal)->translatedFormat('d F Y');
-        $this->tanggal_akhir = \Carbon\Carbon::parse($tanggal_akhir)->translatedFormat('d F Y');
+        $this->tanggal_awal = \Carbon\Carbon::parse($tanggal_awal)->locale('id')->translatedFormat('d F Y');
+        $this->tanggal_akhir = \Carbon\Carbon::parse($tanggal_akhir)->locale('id')->translatedFormat('d F Y');
         $this->metode_pembayaran = $metode_pembayaran;
     }
 

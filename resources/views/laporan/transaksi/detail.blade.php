@@ -43,7 +43,7 @@
                         <tr>
                             <th colspan="2">Status</th>
                             <td colspan="3">
-                                <span class="badge bg-{{ $data['header']['status'] == 'success' ? 'success' : 'warning' }}">
+                                <span class="badge bg-{{ $data['header']['status'] === 'success' ? 'success' : ($data['header']['status'] === 'pending' ? 'warning' : 'danger') }}">
                                     {{ ucfirst($data['header']['status']) }}
                                 </span>
                             </td>

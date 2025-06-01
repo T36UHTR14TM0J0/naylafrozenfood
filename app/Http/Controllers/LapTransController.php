@@ -135,6 +135,6 @@ class LapTransController extends Controller
 
         // Generate PDF using PdfService
         $pdfService = new PdfService();
-        return $pdfService->generatePdf($html, 'invoice-'.$data['header']['faktur'].'.pdf');
+        return $pdfService->generatePdf($html, 'Detail-'.$data['header']['faktur'].'.pdf');
     }
 }
