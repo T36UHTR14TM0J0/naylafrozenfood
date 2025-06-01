@@ -37,6 +37,6 @@ class PdfService
         
         $mpdf->WriteHTML($html);
         
-        return $mpdf->Output($filename, \Mpdf\Output\Destination::DOWNLOAD);
+        return $mpdf->Output($filename, \Mpdf\Output\Destination::INLINE);
     }
 }

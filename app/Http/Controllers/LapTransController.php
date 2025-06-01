@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Transaksi;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use App\Exports\TransaksiExport;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Services\PdfService;
 
 class LapTransController extends Controller
 {
@@ -52,6 +55,7 @@ class LapTransController extends Controller
         // Format data untuk ditampilkan
         $data = [
             'header' => [
+                'id'                => $transaksi->id,
                 'faktur'            => $transaksi->faktur,
                 'tanggal'           => $transaksi->tanggal_transaksi,
                 'metode_pembayaran' => $transaksi->metode_pembayaran,
@@ -73,5 +77,64 @@ class LapTransController extends Controller
         ];
 
         return view('laporan.transaksi.detail', compact('data'));
+    }
+
+    public function export_transaksi(Request $request)
+    {
+        $tanggal_awal = $request->input('tanggal_awal');
+        $tanggal_akhir = $request->input('tanggal_akhir');
+        $metode_pembayaran = $request->input('metode_pembayaran');
+        
+        $transactions = Transaksi::query()
+            ->when($tanggal_awal && $tanggal_akhir, function ($query) use ($tanggal_awal, $tanggal_akhir) {
+                $query->whereBetween('tanggal_transaksi', [$tanggal_awal, $tanggal_akhir]);
+            })
+            ->when($metode_pembayaran, function ($query) use ($metode_pembayaran) {
+                $query->where('metode_pembayaran', $metode_pembayaran);
+            })
+            ->orderBy('tanggal_transaksi', 'desc')
+            ->get();
+
+        $filename = 'Laporan_Transaksi_' . $tanggal_awal . '_sd_' . $tanggal_akhir . '.xlsx';
+
+        return Excel::download(new TransaksiExport($transactions, $tanggal_awal, $tanggal_akhir, $metode_pembayaran), $filename);
+    }
+
+    public function cetak_pdf($id)
+    {
+        // Ambil data transaksi beserta relasi item transaksi
+        $transaksi = Transaksi::with(['TransaksiDetail.item','user'])
+            ->findOrFail($id);
+
+        // Format data untuk ditampilkan
+        $data = [
+            'header' => [
+                'id'                => $transaksi->id,
+                'faktur'            => $transaksi->faktur,
+                'tanggal'           => $transaksi->tanggal_transaksi,
+                'metode_pembayaran' => $transaksi->metode_pembayaran,
+                'diskon'            => $transaksi->diskon,
+                'total_transaksi'   => $transaksi->total_transaksi,
+                'total_bayar'       => $transaksi->total_bayar,
+                'kembalian'         => $transaksi->kembalian,
+                'status'            => $transaksi->status,
+                'kasir'             => $transaksi->user->name ?? 'Unknown'
+            ],
+            'items' => $transaksi->TransaksiDetail->map(function ($item) {
+                return [
+                    'nama'          => $item->item->nama ?? 'Produk tidak ditemukan',
+                    'harga'         => $item->harga_jual,
+                    'jumlah'        => $item->jumlah,
+                    'total_harga'   => $item->total_harga
+                ];
+            })
+        ];
+        
+        // Render the view to HTML
+        $html = view('laporan.transaksi.cetak', compact('data'))->render();
+
+        // Generate PDF using PdfService
+        $pdfService = new PdfService();
+        return $pdfService->generatePdf($html, 'invoice-'.$data['header']['faktur'].'.pdf');
     }
 }

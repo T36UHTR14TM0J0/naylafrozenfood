@@ -56,6 +56,8 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('report')->name('report.')->group(function () {
         Route::get('/', [LapTransController::class, 'index'])->name('index');
         Route::get('/detail/{id}/detail', [LapTransController::class, 'detail'])->name('detail');
+        Route::get('/export_transaksi', [LapTransController::class, 'export_transaksi'])->name('export_transaksi');
+        Route::get('/cetak_pdf/{id}', [LapTransController::class, 'cetak_pdf'])->name('cetak_pdf');
     });
 });
 

@@ -26,13 +26,18 @@
                             <option value="online" {{ request('metode_pembayaran') == 'online' ? 'selected' : '' }}>Online</option>
                         </select>
                     </div>
-                    <div class="col-md-3 d-flex align-items-end">
-                        <button type="submit" class="btn btn-primary w-100">
+                    <div class="col-md-3 d-flex align-items-end gap-2">
+                        <button type="submit" class="btn btn-sm btn-primary w-100">
                             <i class="fas fa-filter me-2"></i>Filter
                         </button>
+                        <a href="{{ route('report.export_transaksi') }}?tanggal_awal={{ $tanggal_awal }}&tanggal_akhir={{ $tanggal_akhir }}&metode_pembayaran={{ request('metode_pembayaran') }}" 
+                        class="btn btn-success btn-sm w-100">
+                            <i class="fas fa-file-excel me-2"></i>Export
+                        </a>
                     </div>
                 </div>
             </form>
+            
 
             <!-- ==================== TRANSACTION TABLE ==================== -->
             <div class="card shadow-sm border-0">
@@ -62,7 +67,7 @@
                                     <tr class="align-middle">
                                         <td class="text-center">{{ $loop->iteration }}</td>
                                         <td class="fw-semibold">{{ $transaction->faktur }}</td>
-                                        <td class="text-center">{{ \Carbon\Carbon::parse($transaction->tanggal_transaksi)->translatedFormat('d M Y') }}</td>
+                                        <td class="text-center">{{ \Carbon\Carbon::parse($transaction->tanggal_transaksi)->locale('id')->translatedFormat('d M Y') }}</td>
                                         <td class="text-center">
                                             <span class="badge bg-{{ $transaction->metode_pembayaran === 'cash' ? 'success' : 'primary' }}">
                                                 {{ ucfirst($transaction->metode_pembayaran) }}

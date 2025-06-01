@@ -13,6 +13,7 @@ use Midtrans\Snap;
 use Illuminate\Support\Str;
 use Midtrans\Config;
 
+
 class TransaksiController extends Controller
 {
     public function index(Request $request)
@@ -267,4 +268,6 @@ class TransaksiController extends Controller
             ];
         }
     }
+
+    
 }
