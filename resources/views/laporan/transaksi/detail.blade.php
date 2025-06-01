@@ -115,11 +115,9 @@
         <a href="{{ route('report.index') }}" class="btn btn-secondary">
             <i class="fas fa-arrow-left me-2"></i> Kembali
         </a>
-        <div>
-            <button onclick="window.print()" class="btn btn-primary">
-                <i class="fas fa-print me-2"></i> Cetak PDF
-            </button>
-        </div>
+        <a href="{{ route('report.cetak_pdf', $data['header']['id']) }}" class="btn btn-primary" target="_blank">
+            <i class="fas fa-print me-2"></i> Cetak PDF
+        </a>
     </div>
 </div>
 @endsection
