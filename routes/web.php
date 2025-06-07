@@ -43,6 +43,7 @@ Route::middleware(['auth'])->group(function () {
     });
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/data', [DashboardController::class, 'getDashboardData'])->name('dashboard.data');
 
 
     Route::resource('kategori', KategoriController::class);
@@ -90,5 +91,6 @@ Route::prefix('owner')->middleware(['auth', 'owner'])->group(function () {
         Route::get('/', [LapKeuanganControllers::class, 'index'])->name('laporan.index');
         Route::get('/laporan/harian/{date}', [LapKeuanganControllers::class, 'detailHarian'])->name('laporan.detail-harian');
         Route::get('/laporan/cetakharian/{date}', [LapKeuanganControllers::class, 'cetakHarian'])->name('laporan.cetak-harian');
+        Route::get('/laporan/cetak-pdf', [LapKeuanganControllers::class, 'cetak_pdf'])->name('laporan.cetak-pdf');
     });
 });

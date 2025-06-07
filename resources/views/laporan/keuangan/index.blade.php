@@ -9,16 +9,20 @@
         <div class="card-body">
             <form method="GET" action="{{ route('laporan.index') }}">
                 <div class="row">
-                    <div class="col-md-5">
+                    <div class="col-md-4">
                         <label for="start_date">Tanggal Awal</label>
                         <input type="date" name="start_date" id="start_date" class="form-control" value="{{ $startDate }}">
                     </div>
-                    <div class="col-md-5">
+                    <div class="col-md-4">
                         <label for="end_date">Tanggal Akhir</label>
                         <input type="date" name="end_date" id="end_date" class="form-control" value="{{ $endDate }}">
                     </div>
-                    <div class="col-md-2 d-flex align-items-end">
-                        <button type="submit" class="btn btn-primary">Filter</button>
+                    <div class="col-md-4 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary">Filter</button>&nbsp;
+                        <a href="{{ route('laporan.cetak-pdf', ['start_date' => $startDate, 'end_date' => $endDate]) }}" 
+                        class="btn btn-danger ml-2" target="_blank">
+                        Cetak
+                        </a>
                     </div>
                 </div>
             </form>

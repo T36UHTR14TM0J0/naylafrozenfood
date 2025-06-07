@@ -139,4 +139,62 @@ class LapKeuanganControllers extends Controller
         return $pdfService->generatePdf($html, 'Detail_Laporan_Harian-'.$tanggal.'.pdf');
     }
 
+    public function cetak_pdf(Request $request)
+    {
+        $startDate = $request->input('start_date', Carbon::now()->startOfMonth()->format('Y-m-d'));
+        $endDate = $request->input('end_date', Carbon::now()->endOfMonth()->format('Y-m-d'));
+        
+        // Validasi tanggal
+        if ($startDate > $endDate) {
+            return redirect()->back()->with('error', 'Tanggal awal tidak boleh lebih besar dari tanggal akhir');
+        }
+        
+        // Data harian
+        $laporanHarian = [];
+        $currentDate = Carbon::parse($startDate);
+        $endDateObj = Carbon::parse($endDate);
+        
+        while ($currentDate <= $endDateObj) {
+            $dateStr = $currentDate->format('Y-m-d');
+            
+            // Pemasukan harian
+            $pemasukanHarian = Transaksi::where('status', 'success')
+                ->whereDate('tanggal_transaksi', $dateStr)
+                ->sum('total_transaksi');
+                
+            // Pengeluaran harian
+            $pengeluaranHarian = StokItem::where('status', 'masuk')
+                ->whereDate('created_at', $dateStr)
+                ->sum(\DB::raw('jumlah_stok * harga'));
+                
+            $laporanHarian[] = [
+                'tanggal' => $dateStr,
+                'pemasukan' => $pemasukanHarian,
+                'pengeluaran' => $pengeluaranHarian
+            ];
+            
+            $currentDate->addDay();
+        }
+        
+        // Hitung total
+        $pemasukan = array_sum(array_column($laporanHarian, 'pemasukan'));
+        $pengeluaran = array_sum(array_column($laporanHarian, 'pengeluaran'));
+        $labaRugi = $pemasukan - $pengeluaran;
+
+        $title = 'Laporan Keuangan';
+        
+        $html =  view('laporan.keuangan.cetak_pdf', compact(
+            'title',
+            'laporanHarian',
+            'pemasukan',
+            'pengeluaran',
+            'labaRugi',
+            'startDate',
+            'endDate'
+        ))->render();
+
+        $pdfService = new PdfService();
+        return $pdfService->generatePdf($html, 'laporan-keuangan-'.$startDate.'-'.$endDate.'.pdf');
+    }
+
 }
