@@ -89,6 +89,6 @@ Route::prefix('owner')->middleware(['auth', 'owner'])->group(function () {
     Route::prefix('laporan')->group(function () {
         Route::get('/', [LapKeuanganControllers::class, 'index'])->name('laporan.index');
         Route::get('/laporan/harian/{date}', [LapKeuanganControllers::class, 'detailHarian'])->name('laporan.detail-harian');
-        Route::get('/laporan/harian/{date}', [LapKeuanganControllers::class, 'cetakHarian'])->name('cetak-harian');
+        Route::get('/laporan/cetakharian/{date}', [LapKeuanganControllers::class, 'cetakHarian'])->name('laporan.cetak-harian');
     });
 });
