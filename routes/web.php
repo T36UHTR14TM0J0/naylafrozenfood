@@ -47,7 +47,11 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('kategori', KategoriController::class);
     Route::resource('satuan', SatuanController::class);
     Route::resource('item', ItemController::class);
-    Route::resource('stok', ItemStockController::class);
+    Route::resource('stok', ItemStockController::class)->only([
+    'index', 'create', 'store', 'edit', 'update', 'destroy'
+]);
+
+Route::get('/stok/export-pdf', [ItemStockController::class, 'exportPdf'])->name('export_pdf');
     Route::get('/transaksi', [TransaksiController::class, 'index'])->name('transaksi.index');
     Route::post('/transaksi/store', [TransaksiController::class, 'store'])->name('transaksi.store');
 

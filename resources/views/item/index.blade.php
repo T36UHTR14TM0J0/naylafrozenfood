@@ -84,7 +84,7 @@
                             </td>
                             <td>{{ $item->nama }}</td>
                             <td>{{ $item->kategori->nama ?? '-' }}</td>
-                            <td class="text-center">{{ $item->stokTotal->total_stok ?? '-' }}</td>
+                            <td class="text-center">{{ $item->stokTotal->total_stok ?? 0 }}</td>
                             <td>{{ $item->satuan->nama ?? '-' }}</td>
                             <td class="text-nowrap">Rp {{ number_format($item->harga_jual, 0, ',', '.') }}</td>
                             <td class="text-nowrap">{{ $item->created_at->locale('id')->translatedFormat('d F Y') }}</td>

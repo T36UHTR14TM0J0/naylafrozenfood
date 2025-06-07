@@ -9,6 +9,7 @@ use App\Models\StokItem;
 use App\Http\Requests\ItemStockRequest;
 use App\Models\Kategori;
 use App\Models\StokTotal;
+use App\Services\PdfService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -105,6 +106,45 @@ class ItemStockController extends Controller
         }
     }
 
+    public function edit(string $id)
+    {
+        $stok       = StokItem::findOrFail($id);
+        $items      = Item::orderBy('nama')->get();
+        $suppliers  = Supplier::orderBy('nama')->get();
+        
+        return view('item_stok.edit', compact('stok', 'items', 'suppliers'));
+    }
+
+
+    public function update(ItemStockRequest $request, string $id)
+    {
+        DB::beginTransaction();
+
+        try {
+            $stok = StokItem::findOrFail($id);
+            $validated = $request->validated();
+
+            // Revert old stock
+            $this->updateTotalStock($stok->item_id, -$stok->jumlah_stok, $stok->status);
+
+            // Update the stock record
+            $stok->update($validated);
+
+            // Apply new stock
+            $this->updateTotalStock($stok->item_id, $validated['jumlah_stok'], 'masuk');
+
+            DB::commit();
+
+            return redirect()->route('stok.index')
+                ->with('success', 'Stok item berhasil diperbarui');
+                
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->withInput()
+                ->with('error', 'Gagal memperbarui stok. Silakan coba lagi.');
+        }
+    }
+
     /**
      * Menghapus stok item berdasarkan ID
      */
@@ -164,11 +204,52 @@ class ItemStockController extends Controller
                 
         } catch (\Exception $e) {
             // Rollback dan log kesalahan untuk debugging
-            DB::rollBack();
-            \Log::error('Error deleting stock item: ' . $e->getMessage());
-            
+            DB::rollBack();            
             return redirect()->route('stok.index')
                 ->with('error', 'Gagal menghapus stok item. Silakan coba lagi.');
         }
+    }
+
+
+    protected function updateTotalStock($itemId, $quantity, $status)
+    {
+        $stokTotal = StokTotal::firstOrCreate(
+            ['item_id' => $itemId],
+            ['total_stok' => 0]
+        );
+
+        $adjustment = ($status == 'masuk') ? $quantity : -$quantity;
+        $newTotal = $stokTotal->total_stok + $adjustment;
+
+        if ($newTotal < 0) {
+            throw new \RuntimeException("Stok tidak boleh kurang dari nol");
+        }
+
+        $stokTotal->total_stok = $newTotal;
+        $stokTotal->save();
+    }
+
+    public function exportPdf()
+    {
+        $tanggalAwal    = request('tanggal_awal') ?: now()->format('Y-m-d');
+        $tanggalAkhir   = request('tanggal_akhir') ?: now()->addDays(30)->format('Y-m-d');
+        $status         = request('status');
+
+        $productStocks = StokItem::with(['item', 'supplier'])
+            ->when($tanggalAwal && $tanggalAkhir, function ($query) use ($tanggalAwal, $tanggalAkhir) {
+                $query->whereBetween('created_at', [$tanggalAwal, $tanggalAkhir]);
+            })
+            ->when($status, function ($query) use ($status) {
+                $query->where('status', $status);
+            })
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+
+        $html = view('item_stok.pdf', compact('productStocks', 'tanggalAwal', 'tanggalAkhir', 'status'))->render();
+       
+        // Generate PDF using PdfService
+        $pdfService = new PdfService();
+        return $pdfService->generatePdf($html, 'Lap_item_stock-'.$tanggalAwal.'-'.$tanggalAkhir.'.pdf');
     }
 }

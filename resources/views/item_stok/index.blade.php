@@ -4,12 +4,18 @@
 @section('content')
 <div class="container-fluid">
 
-    <!-- Tombol untuk menambah stok item -->
+    <!-- Tombol untuk menambah stok item dan export PDF -->
     <div class="row mb-4">
-        <div class="col-md-12">
+        <div class="col-md-12 d-flex justify-content-between">
             <a href="{{ route('stok.create') }}" class="btn btn-sm btn-primary">
                 <i class="fas fa-plus me-2"></i>Tambah Stok Item
             </a>
+            <div>
+                <a href="{{ route('export_pdf') }}?tanggal_awal={{ request('tanggal_awal') }}&tanggal_akhir={{ request('tanggal_akhir') }}&status={{ request('status') }}" 
+                   class="btn btn-sm btn-danger me-2" target="_blank">
+                    <i class="fas fa-file-pdf me-2"></i>Export PDF
+                </a>
+            </div>
         </div>
     </div>
 
@@ -64,7 +70,7 @@
                             <th width="10%" class="text-white text-center">Harga</th>
                             <th width="5%" class="text-white text-center">Status</th>
                             <th width="20%" class="text-white text-center">Tanggal</th>
-                            <th width="5%" class="text-white text-center">Aksi</th>
+                            <th width="10%" class="text-white text-center">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -82,9 +88,17 @@
                             </td>
                             <td class="text-center">{{ $productStock->created_at->locale('id')->translatedFormat('d F Y') }}</td>
                             <td class="text-center">
+                                <!-- Button Edit -->
+                                @if ($productStock->status == 'masuk')
+                                <a href="{{ route('stok.edit', $productStock->id) }}" class="btn btn-sm btn-warning mb-2" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                    
+                                @endif
+                                                                
                                 <!-- Button Hapus -->
                                 <button class="btn btn-sm btn-danger" title="Hapus"
-                                        onclick="confirmDelete('{{ $productStock->id }}', '{{ $productStock->nama }}')">
+                                        onclick="confirmDelete('{{ $productStock->id }}', '{{ $productStock->item->nama }}')">
                                     <i class="fas fa-trash-alt"></i>
                                 </button>
                                 <form id="delete-form-{{ $productStock->id }}" action="{{ route('stok.destroy', $productStock->id) }}" method="POST" class="d-none">
@@ -117,9 +131,27 @@
     </div>
 
 </div>
-@push('scripts')
 
+@push('scripts')
 <script>
+    // Fungsi untuk konfirmasi penghapusan
+    function confirmDelete(id, name) {
+        Swal.fire({
+            title: 'Apakah Anda yakin?',
+            html: `Anda akan menghapus stok item <strong>${name}</strong>.`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Ya, hapus!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById(`delete-form-${id}`).submit();
+            }
+        });
+    }
+
     // Fungsi untuk format tanggal ke format yang dibutuhkan (YYYY-MM-DD)
     function formatDate(date) {
         const year = date.getFullYear();
