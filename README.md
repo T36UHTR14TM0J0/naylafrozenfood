@@ -1,19 +1,24 @@
+## Cara Instal di Local XAMPP
 
-## Cara Instal di Local
+A. Persiapan yang diperlukan 1. Install xampp php 8.2 2. Install composer terbaru 3. install visual studio code
+
+B. Cara Download dan install
+
 1. download source code di link berikut https://github.com/T36UHTR14TM0J0/naylafrozenfood.git
-2. extract dan copy paste kedalam htdocs
-3. lalu buka project kedalam visual studio code
-4. buat file atau copy paste file .env.example dan ubah nama menjadi .env
-5. lalu buka terminal
-6. install dependensi laravel dengan ketik perintah : composer install
-7. php artisan key:generate
-8. php artisan migrate
-9. php artisan storage:link
-10. php artisan db:seed --class=UserSeeder
-11. lalu php artisan serve
+2. extract folder naylafrozenfood-master dan copy paste kedalam htdocs
+
+## Note : Jika didalam folder naylafrozenfood-master ada folder naylafrozenfood-master keluarkan semua file di naylafrozenfood-master kedua, dan rename folder naylafrozenfood-master menjadi naylafrozenfood
+
+3. Buat database baru di dalam phpmyadmin dengan nama : naylafrozenfood
+4. lalu import database dari folder file_database
+5. lalu buka project naylafrozenfood kedalam visual studio code
+6. copy paste file .env.example dan ubah nama menjadi .env
+7. lalu buka terminal di visual studio code
+8. install dependensi laravel dengan ketik perintah : <b>composer install</b>
+9. selanjutnya masukkan perintah : <b>php artisan key:generate</b>
+10. <b>php artisan storage:link</b>
+11. <b>lalu php artisan serve</b>
 12. buka chrome http://127.0.0.1:8000
-
-
 
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
@@ -28,13 +33,13 @@
 
 Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+-   [Simple, fast routing engine](https://laravel.com/docs/routing).
+-   [Powerful dependency injection container](https://laravel.com/docs/container).
+-   Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
+-   Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
+-   Database agnostic [schema migrations](https://laravel.com/docs/migrations).
+-   [Robust background job processing](https://laravel.com/docs/queues).
+-   [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
 
 Laravel is accessible, powerful, and provides tools required for large, robust applications.
 
@@ -52,14 +57,14 @@ We would like to extend our thanks to the following sponsors for funding Laravel
 
 ### Premium Partners
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development/)**
-- **[Active Logic](https://activelogic.com)**
+-   **[Vehikl](https://vehikl.com/)**
+-   **[Tighten Co.](https://tighten.co)**
+-   **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
+-   **[64 Robots](https://64robots.com)**
+-   **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
+-   **[DevSquad](https://devsquad.com/hire-laravel-developers)**
+-   **[Redberry](https://redberry.international/laravel-development/)**
+-   **[Active Logic](https://activelogic.com)**
 
 ## Contributing
 
