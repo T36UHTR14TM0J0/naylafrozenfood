@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\StokItem;
 use App\Models\Transaksi;
+use App\Services\PdfService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -94,6 +95,48 @@ class LapKeuanganControllers extends Controller
             'labaRugi',
             'date'
         ));
+    }
+
+    public function cetakHarian($date)
+    {
+        // Validasi format tanggal
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
+            abort(400, 'Format tanggal tidak valid');
+        }
+
+        // Ambil data sama seperti detailHarian
+        $transaksis = Transaksi::where('status', 'success')
+            ->whereDate('tanggal_transaksi', $date)
+            ->orderBy('tanggal_transaksi', 'desc')
+            ->get();
+            
+        $pengeluarans = StokItem::with(['item', 'supplier'])
+            ->where('status', 'masuk')
+            ->whereDate('created_at', $date)
+            ->orderBy('created_at', 'desc')
+            ->get();
+            
+        $totalPemasukan = $transaksis->sum('total_transaksi');
+        $totalPengeluaran = $pengeluarans->sum(function($item) {
+            return $item->jumlah_stok * $item->harga;
+        });
+        $labaRugi = $totalPemasukan - $totalPengeluaran;
+        
+        $tanggal = Carbon::parse($date)->isoFormat('D MMMM Y');
+        
+            
+        $html = view('laporan.keuangan.cetak_harian', compact(
+            'transaksis',
+            'pengeluarans',
+            'totalPemasukan',
+            'totalPengeluaran',
+            'labaRugi',
+            'date',
+            'tanggal'
+        ))->render();
+        
+        $pdfService = new PdfService();
+        return $pdfService->generatePdf($html, 'Detail_Laporan_Harian-'.$tanggal.'.pdf');
     }
 
 }

@@ -6,6 +6,9 @@
         <a href="{{ route('laporan.index', ['start_date' => $date, 'end_date' => $date]) }}" class="btn btn-secondary">
            Kembali
         </a>
+        <a href="{{ route('laporan.cetak-harian', ['date' => $date]) }}" class="btn btn-danger" target="_blank">
+        <i class="fas fa-file-pdf"></i> Cetak PDF
+    </a>
     </div>
 
     <div class="card mb-4">
