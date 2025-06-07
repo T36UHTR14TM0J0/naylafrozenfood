@@ -84,7 +84,7 @@
         <li class="pc-item pc-caption">
           <label>Laporan :</label>
         </li>
-
+        @if (auth()->user()->isAdmin())
         <!-- Menu Laporan Transaksi -->
         <li class="pc-item">
           <a href="{{ route('report.index') }}" class="pc-link">
@@ -92,12 +92,15 @@
             <span class="pc-mtext">Laporan Transaksi</span>
           </a>
         </li>
+        @endif
+        @if (auth()->user()->isOwner())
         <li class="pc-item">
-          <a href="#" class="pc-link">
+          <a href="{{ route('laporan.index') }}" class="pc-link">
             <span class="pc-micon"><i class="fas fa-money-bill-wave"></i></span>
             <span class="pc-mtext">Laporan Keuangan</span>
           </a>
         </li>
+        @endif
 
         <!-- Menu Manajemen Akun hanya untuk Owner -->
         @if (auth()->user()->isOwner())

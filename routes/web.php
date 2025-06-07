@@ -7,6 +7,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\ItemStockController;
 use App\Http\Controllers\KategoriController;
+use App\Http\Controllers\LapKeuanganControllers;
 use App\Http\Controllers\LapTransController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SatuanController;
@@ -57,19 +58,20 @@ Route::get('/stok/export-pdf', [ItemStockController::class, 'exportPdf'])->name(
 
     Route::post('/create-qris-transaction', [TransaksiController::class, 'createTransaction'])->name('create.qris.transaction');
 
+    
+
+    
+});
+
+// Admin Routes
+Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
+    
     Route::prefix('report')->name('report.')->group(function () {
         Route::get('/', [LapTransController::class, 'index'])->name('index');
         Route::get('/detail/{id}/detail', [LapTransController::class, 'detail'])->name('detail');
         Route::get('/export_transaksi', [LapTransController::class, 'export_transaksi'])->name('export_transaksi');
         Route::get('/cetak_pdf/{id}', [LapTransController::class, 'cetak_pdf'])->name('cetak_pdf');
     });
-});
-
-// Admin Routes
-Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
-    
-    // Route::post('/transaksi/callback', [TransaksiController::class, 'handleCallback'])
-    //  ->name('transaksi.callback');
 });
 
 // // Owner Routes
@@ -83,4 +85,9 @@ Route::prefix('owner')->middleware(['auth', 'owner'])->group(function () {
     Route::delete('/user/{user}', [UserController::class, 'destroy'])->name('user.destroy');
 
     Route::resource('supplier', SupplierController::class);
+
+    Route::prefix('laporan')->group(function () {
+        Route::get('/', [LapKeuanganControllers::class, 'index'])->name('laporan.index');
+        Route::get('/laporan/harian/{date}', [LapKeuanganControllers::class, 'detailHarian'])->name('laporan.detail-harian');
+    });
 });
