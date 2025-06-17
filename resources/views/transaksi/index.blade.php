@@ -47,7 +47,7 @@
                         </td>
                         <td class="text-center">
                             <?php
-                            dd($item->stokTotal && $item->stokTotal->total_stok !== NULL);
+                            dd($item->stokTotal);
                             ?>
                             @if($item->stokTotal && $item->stokTotal->total_stok !== NULL || $item->stokTotal && $item->stokTotal->total_stok !== '0' )
                                 <button class="btn btn-success btn-sm add-to-cart" 
