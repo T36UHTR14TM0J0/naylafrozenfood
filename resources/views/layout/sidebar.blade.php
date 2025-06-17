@@ -22,14 +22,14 @@
         </li>
 
         <!-- Menu Transaksi hanya untuk Admin -->
-        {{-- @if (auth()->user()->isAdmin()) --}}
+        @if (auth()->user()->isAdmin())
         <li class="pc-item">
           <a href="{{ route('transaksi.index') }}" class="pc-link">
             <span class="pc-micon"><i class="ti ti-receipt"></i></span>
             <span class="pc-mtext">Transaksi</span>
           </a>
         </li>
-        {{-- @endif --}}
+        @endif
         
         <!-- Caption Master Data -->
         <li class="pc-item pc-caption">

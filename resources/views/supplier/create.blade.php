@@ -42,12 +42,17 @@
                     class="form-control @error('no_hp') is-invalid @enderror"
                     placeholder="Contoh: 081234567890"
                     value="{{ old('no_hp') }}"
+                    pattern="[0-9]*"
+                    minlength="10"
+                    maxlength="15"
+                    oninput="this.value = this.value.replace(/[^0-9]/g, '');"
                     >
             @error('no_hp')
                 <div class="invalid-feedback">
                 {{ $message }}
                 </div>
             @enderror
+            <small class="text-muted">Minimal 10 digit angka</small>
         </div>
 
         <!-- Deskripsi -->
@@ -90,4 +95,19 @@
         </div>
     </form>
 </div>
+
+<script>
+    // Validasi tambahan untuk nomor HP
+    document.getElementById('no_hp').addEventListener('input', function(e) {
+        // Hanya menerima angka
+        this.value = this.value.replace(/[^0-9]/g, '');
+        
+        // // Validasi panjang nomor
+        // if (this.value.length < 10) {
+        //     this.setCustomValidity('Nomor HP minimal 10 digit');
+        // } else {
+        //     this.setCustomValidity('');
+        // }
+    });
+</script>
 @endsection

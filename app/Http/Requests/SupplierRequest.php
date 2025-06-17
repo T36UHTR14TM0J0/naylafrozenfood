@@ -24,7 +24,7 @@ class SupplierRequest extends FormRequest
         $rules = [
             'nama' => 'required|string|max:255|unique:suppliers,nama',
             'alamat' => 'required|string|max:255',
-            'no_hp' => 'required|string|max:20|regex:/^[0-9]+$/',
+            'no_hp' => 'required|string|min:10|max:13|regex:/^[0-9]+$/',
             'desc' => 'nullable|string|max:1000',
             'status' => 'required|in:aktif,tidak aktif',
         ];
@@ -51,6 +51,7 @@ class SupplierRequest extends FormRequest
 
             'no_hp.required' => 'Nomor HP wajib diisi',
             'no_hp.string' => 'Nomor HP harus berupa teks',
+            'no_hp.min' => 'Nomor HP tidak boleh kurang dari 10 karakter',
             'no_hp.max' => 'Nomor HP tidak boleh lebih dari 20 karakter',
             'no_hp.regex' => 'Nomor HP hanya boleh mengandung angka',
 

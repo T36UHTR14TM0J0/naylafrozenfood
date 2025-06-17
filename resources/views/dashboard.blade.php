@@ -7,7 +7,7 @@
         <div class="col-md-12">
             <div class="card shadow-sm">
                 <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0">Filter Laporan</h5>
+                    <h5 class="mb-0 text-white">Filter Laporan</h5>
                 </div>
                 <div class="card-body">
                     <form id="filterForm">
