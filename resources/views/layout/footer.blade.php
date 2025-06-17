@@ -4,7 +4,7 @@
       <!-- Kolom pertama untuk informasi footer -->
       <div class="col-sm my-1">
         <p class="m-0">
-          Mantis &#9829; crafted by Team <a href="" target="_blank">Codedthemes</a>  <!-- Menampilkan informasi pembuat -->
+          @CopyRight:KikiYulianti</a>  <!-- Menampilkan informasi pembuat -->
         </p>
       </div>
       <!-- Kolom kedua untuk link footer -->
