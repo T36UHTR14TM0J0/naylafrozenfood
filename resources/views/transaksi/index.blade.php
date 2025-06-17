@@ -39,7 +39,7 @@
                         <td class="text-center">{{ $item->nama }}</td>
                         <td class="text-center">Rp {{ number_format($item->harga_jual, 0, ',', '.') }}</td>
                         <td class="text-center">
-                            @if($item->stokTotal && $item->stokTotal->total_stok !== NULL)
+                            @if($item->stokTotal && $item->stokTotal->total_stok > 0)
                                 {{ $item->stokTotal->total_stok . ' ' . ($item->satuan ? $item->satuan->nama : '') }}
                             @else
                                 <span class="text-danger">Stok Habis</span>
